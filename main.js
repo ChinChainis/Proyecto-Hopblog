@@ -13,7 +13,8 @@ let draw_width = "2";
 let is_drawing = false;
 
 let frame_array = []
-let index_frame = -1
+let index_frame = 0;
+let num_frames = 1;
 
 let restore_array = [];
 let index = -1;
@@ -33,6 +34,15 @@ canvas.addEventListener("touchend",stop, false);
 canvas.addEventListener("mouseup",stop, false);
 canvas.addEventListener("mouseout",stop, false);
 
+/*
+window.onload = function() {
+   primerframe();
+ };
+
+function primerframe(){
+   index_frame+=1;
+   console.log(index_frame);
+}*/
 
 
 function start(event){
@@ -67,18 +77,33 @@ function stop(event) {
    if(event.type != 'mouseout'){
       event.preventDefault();
       restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
+
+      console.log(index_frame);
+
+      //array de dibujos
+      frame_array[index_frame]=restore_array;
+
+      //frame_array[index_frame][index] = 0;
+      //frame_array.splice(index_frame,0,restore_array);
+      //console.log(frame_array[index_frame][0]);
+
       index += 1;
    }
 
-   console.log(restore_array);
+   console.log(frame_array);
 }
 
 function undo(){
    if (index <= 0){
-      clear_canvas()
+      clear_canvas();
    } else {
+      console.log("indice antes undo: ",index);
+
       index -= 1;
       restore_array.pop();
+
+      frame_array[index_frame] = restore_array;
+
       context.putImageData(restore_array[index], 0,0);
    }
 
@@ -91,6 +116,7 @@ function clear_canvas(){
 
    restore_array = [];
    index = -1;
+   frame_array[index_frame] = []
 }
 
 // https://stackoverflow.com/questions/10673122/how-to-save-canvas-as-an-image-with-canvas-todataurl
@@ -114,3 +140,23 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
    downloadImage(dataURL, 'my-canvas.jpeg');
 });
 
+
+document.getElementById('btn-next').addEventListener("click", function(e) {
+   //console.log("holaaa");
+   index_frame += 1;
+   if (index_frame >= num_frames){
+      num_frames += 1;
+      index = -1;
+      restore_array = [];
+      console.log("num. frames: ",num_frames);
+   }
+   console.log(index_frame);
+
+});
+
+document.getElementById('btn-before').addEventListener("click", function(e) {
+   if (index_frame > 0){
+      index_frame -= 1;
+   }
+   console.log(index_frame);
+});
