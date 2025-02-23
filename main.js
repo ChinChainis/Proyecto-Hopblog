@@ -100,11 +100,11 @@ function undo(){
       console.log("indice antes undo: ",index);
 
       index -= 1;
-      restore_array.pop();
+      frame_array[index_frame].pop();
 
-      frame_array[index_frame] = restore_array;
-
-      context.putImageData(restore_array[index], 0,0);
+      //frame_array[index_frame] = restore_array;
+      console.log("ultimo dibujo: ",frame_array[index_frame][index]);
+      context.putImageData(frame_array[index_frame][index], 0,0);
    }
 
 }
@@ -150,19 +150,30 @@ document.getElementById('btn-next').addEventListener("click", function(e) {
       index = -1;
       restore_array = [];
       console.log("num. frames: ",num_frames);
+   }else if(frame_array[index_frame].length >= 1){
+      console.log("frame: ",index_frame);
+      console.log("indice: ",index);
+      index = frame_array[index_frame].length - 1;
+      context.putImageData(frame_array[index_frame][index], 0,0);       
    }else{
-      let tamarray = frame_array[index_frame].length - 1;
-      context.putImageData(frame_array[index_frame][tamarray], 0,0);       
+      index = 0;
    }
-   console.log(index_frame);
-
+   console.log("frame: ",index_frame);
+   console.log("indice: ",index);
 });
 
 document.getElementById('btn-before').addEventListener("click", function(e) {
    if (index_frame > 0){
       index_frame -= 1;
-      let tamarray = frame_array[index_frame].length - 1;
-      context.putImageData(frame_array[index_frame][tamarray], 0,0);    
+      if(frame_array[index_frame].length >= 1){
+         index = frame_array[index_frame].length - 1;
+         console.log("frame: ",index_frame);
+         console.log("indice: ",index);
+         context.putImageData(frame_array[index_frame][index], 0,0);    
+      }else{
+         index = 0;
+      }
    }
-   console.log(index_frame);
+   console.log("frame: ",index_frame);
+   console.log("indice: ",index);
 });
