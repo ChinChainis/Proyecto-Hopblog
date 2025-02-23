@@ -145,10 +145,14 @@ document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
    index_frame += 1;
    if (index_frame >= num_frames){
+      clear_canvas();
       num_frames += 1;
       index = -1;
       restore_array = [];
       console.log("num. frames: ",num_frames);
+   }else{
+      let tamarray = frame_array[index_frame].length - 1;
+      context.putImageData(frame_array[index_frame][tamarray], 0,0);       
    }
    console.log(index_frame);
 
@@ -157,6 +161,8 @@ document.getElementById('btn-next').addEventListener("click", function(e) {
 document.getElementById('btn-before').addEventListener("click", function(e) {
    if (index_frame > 0){
       index_frame -= 1;
+      let tamarray = frame_array[index_frame].length - 1;
+      context.putImageData(frame_array[index_frame][tamarray], 0,0);    
    }
    console.log(index_frame);
 });
