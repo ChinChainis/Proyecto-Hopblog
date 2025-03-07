@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById("canvas");
 
 canvas.width = window.innerHeight -60;
@@ -139,7 +140,6 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
 
    downloadImage(dataURL, 'my-canvas.jpeg');
 });
-
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
