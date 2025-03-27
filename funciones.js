@@ -162,6 +162,7 @@ document.getElementById('btn-download-PNG').addEventListener("click", function(e
       var tamtotal = frame_array[i].length - 1;
       context.putImageData(frame_array[i][tamtotal], 0,0);  
       var nomarchivo = 'frame' + i + '.png';
+      var a = document.createElement('a');
       pics.push(a);
       //a.click();
 
