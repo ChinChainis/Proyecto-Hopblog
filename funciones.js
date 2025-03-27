@@ -140,17 +140,46 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
 
    downloadImage(dataURL, 'my-canvas.jpeg');
 });
-
-document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
+/*
+document.getElementById('btn-download-PNG-old').addEventListener("click", function(e) {
    //console.log("holaaa");
    let downloadLink = document.createElement('a');
-   downloadLink.setAttribute('download', 'CanvasAsImage.png');
+   downloadLink.setAttribute('download', 'canvas.png');
    var canvas = document.querySelector('canvas');
    canvas.toBlob(blob => {
      let url = URL.createObjectURL(blob);
      downloadLink.setAttribute('href', url);
      downloadLink.click();
    });
+});
+*/
+
+document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
+   console.log(num_frames);
+   var pics = [];
+   for (let i = 0; i < num_frames; i++) {
+      console.log("holaaa");
+      var tamtotal = frame_array[i].length - 1;
+      context.putImageData(frame_array[i][tamtotal], 0,0);  
+      var nomarchivo = 'frame' + i + '.png';
+      pics.push(a);
+      //a.click();
+
+      let downloadLink = document.createElement('a');
+      downloadLink.setAttribute('download', nomarchivo);
+      var canvas = document.querySelector('canvas');
+      canvas.toBlob(blob => {
+        let url = URL.createObjectURL(blob);
+        downloadLink.setAttribute('href', url);
+        downloadLink.click();
+      });
+
+   } 
+   console.log(pics);
+   //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
+
+   //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
+
 });
 
 
