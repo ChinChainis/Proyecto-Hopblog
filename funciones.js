@@ -141,6 +141,19 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
    downloadImage(dataURL, 'my-canvas.jpeg');
 });
 
+document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
+   //console.log("holaaa");
+   let downloadLink = document.createElement('a');
+   downloadLink.setAttribute('download', 'CanvasAsImage.png');
+   var canvas = document.querySelector('canvas');
+   canvas.toBlob(blob => {
+     let url = URL.createObjectURL(blob);
+     downloadLink.setAttribute('href', url);
+     downloadLink.click();
+   });
+});
+
+
 document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
    index_frame += 1;
