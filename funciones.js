@@ -129,7 +129,7 @@ function downloadImage(data, filename = 'untitled.jpeg') {
    document.body.appendChild(a);
    a.click();
 }
-
+/*
 // Convert canvas to image
 document.getElementById('btn-download').addEventListener("click", function(e) {
    //console.log("holaaa");
@@ -139,9 +139,9 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
    var dataURL = canvas.toDataURL("image/jpeg", 1.0);
 
    downloadImage(dataURL, 'my-canvas.jpeg');
-});
-/*
-document.getElementById('btn-download-PNG-old').addEventListener("click", function(e) {
+});*/
+
+document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
    //console.log("holaaa");
    let downloadLink = document.createElement('a');
    downloadLink.setAttribute('download', 'canvas.png');
@@ -152,9 +152,9 @@ document.getElementById('btn-download-PNG-old').addEventListener("click", functi
      downloadLink.click();
    });
 });
-*/
 
-document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
+/*
+document.getElementById('btn-video').addEventListener("click", function(e) {
    console.log(num_frames);
    var pics = [];
    for (let i = 0; i < num_frames; i++) {
@@ -181,7 +181,7 @@ document.getElementById('btn-download-PNG').addEventListener("click", function(e
 
    //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
 
-});
+});*/
 
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
