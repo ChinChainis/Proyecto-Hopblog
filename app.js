@@ -1,36 +1,3 @@
-/*const http = require('http')
-const fs = require('fs')
-const port = 3000
-
-//server http://localhost:3000/
-const server = http.createServer(function(req,res){
-    res.writeHead(200,{'Content-Type':'text/html'})
-
-    fs.readFile('index.html',function(error,data){
-        if(error){
-            res.writeHead(404)
-            res.write('Error: fichero no encontrado')
-        }else{
-            app.use(express.static('styles.css'))
-            res.write(data)
-        }
-        res.end()
-    })
-})
-
-server.listen(port,function(error){
-    if (error){
-        console.log("Error en listen",error)
-    }else{
-        console.log("Server en port " + port)
-    }
-})*/
-/*
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
-var path = require('path');
-*/
 import http from 'http';
 import url from 'url';
 import fs from 'fs';
