@@ -25,10 +25,18 @@ server.listen(port,function(error){
         console.log("Server en port " + port)
     }
 })*/
+/*
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
 var path = require('path');
+*/
+import http from 'http';
+import url from 'url';
+import fs from 'fs';
+import path from 'path';
+
+
 
 const mimetypes = {
     'html': 'text/html',
