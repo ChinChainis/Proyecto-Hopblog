@@ -153,7 +153,7 @@ document.getElementById('btn-download-PNG').addEventListener("click", function(e
    });
 });
 
-/*
+
 document.getElementById('btn-video').addEventListener("click", function(e) {
    console.log(num_frames);
    var pics = [];
@@ -181,7 +181,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
 
    //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
 
-});*/
+});
 
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
