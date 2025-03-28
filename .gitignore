@@ -1,6 +1,6 @@
 procesamiento_video.js
-package.json
 package-lock.json
 node_modules/
 frames/
 video.mp4
+server_envio.js
