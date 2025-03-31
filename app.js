@@ -87,8 +87,10 @@ http.createServer((req, res) => {
             .on('error', (error) => {
                 console.error(error);
             });
-  
 
+            //myuri = "/index.html";
+
+            /*
 
             let vid = myuri.slice(1);
     
@@ -106,7 +108,7 @@ http.createServer((req, res) => {
                     res.writeHead(200,{"Content-type":"video/mp4"});
                     res.end(content);
                 }
-            });
+            });*/
         }else try{         //hacemos el try catch para salvar el error de crasheo de cuando intentamos acceder al video de forma bruta en  la url
             var mimeType = mimetypes[path.extname(filename).split('.').reverse()[0]];
             res.writeHead(200, {
