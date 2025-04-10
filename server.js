@@ -6,6 +6,11 @@ import path from 'path';
 import { dirname } from 'path';
 import express from 'express';
 
+import ffmpegStatic from 'ffmpeg-static';
+import ffmpeg from 'fluent-ffmpeg';
+ffmpeg.setFfmpegPath(ffmpegStatic);
+
+
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +28,15 @@ app.set('view engine','ejs');
 //si usamos pug, sustituye ejs por pug
 
 app.use(express.static(path.join(__dirname,'public')));
+app.get('/',(req,res) => {
+    console.log("holaa");
+    //res.status(200);
+    //res.sendFile(__dirname + "/" + "styles.css");
+    res.render('index');
+    //podríamos enviar variables al html si hacemos res.render('index', {text: "World"}) y luego en el html Hello <%= text %>
+    //res.sendFile(path.join(__dirname,'/index.html'));
+});
+
 app.get('/',(req,res) => {
     console.log("holaa");
     //res.status(200);
