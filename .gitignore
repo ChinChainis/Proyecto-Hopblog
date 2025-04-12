@@ -4,3 +4,6 @@ node_modules/
 frames/
 video.mp4
 server_envio.js
+schema.sql
+.env
+funciones_sql.js
