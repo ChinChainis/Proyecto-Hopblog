@@ -2,7 +2,7 @@
   "name": "proyecto-hopblog",
   "version": "1.0.0",
   "description": "Nombre sujeto a cambio",
-  "main": "app.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
