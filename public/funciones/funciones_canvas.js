@@ -158,7 +158,6 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
    console.log(num_frames);
    var pics = [];
    for (let i = 0; i < num_frames; i++) {
-      console.log("holaaa");
       var tamtotal = frame_array[i].length - 1;
       context.putImageData(frame_array[i][tamtotal], 0,0);  
       var nomarchivo = 'frame' + i + '.png';
@@ -171,18 +170,71 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       var canvas = document.querySelector('canvas');
       canvas.toBlob(blob => {
         let url = URL.createObjectURL(blob);
-        downloadLink.setAttribute('href', url);
-        downloadLink.click();
+        //downloadLink.setAttribute('href', url);
+        //downloadLink.click();
       });
 
    } 
-   console.log(pics);
+
+   //console.log("dentro form");
+   // The Array that will be send to the server:
+   const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
+
+   const form = document.querySelector("form");
+
+   // Handle the form's submit event (when the button Submit gets clicked)
+   form.addEventListener("submit", e =>{
+      // Prevent the default HTML form submission behavior:
+      e.preventDefault();
+
+      // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
+      fetch("http://localhost:3000/frames", {
+         method: "POST",
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(pics)
+      })
+      .then( res => res.json() ) // <= Handle JSON response from server
+      .then( data => console.log(data) )
+      .catch( error => console.error(error) );   
+
+   })
+   //console.log(pics);
    //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
 
    //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
 
 });
 
+document.getElementById('btn-form').addEventListener("click", function(e) {
+   console.log("dentro form");
+   // The Array that will be send to the server:
+  const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
+
+  const form = document.querySelector("form");
+
+  // Handle the form's submit event (when the button Submit gets clicked)
+  form.addEventListener("submit", e =>{
+      // Prevent the default HTML form submission behavior:
+      e.preventDefault();
+
+      // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
+      fetch("http://localhost:3000/colors", {
+         method: "POST",
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(arrayDestinedForServer)
+      })
+      .then( res => res.json() ) // <= Handle JSON response from server
+      .then( data => console.log(data) )
+      .catch( error => console.error(error) );   
+
+   })
+});
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
