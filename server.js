@@ -28,8 +28,10 @@ app.set('view engine','ejs');
 //si usamos pug, sustituye ejs por pug
 
 app.use(express.static(path.join(__dirname,'public')));
+app.use( express.json() ); // <== Make sure we can handle JSON data from the client
+
 app.get('/',(req,res) => {
-    console.log("holaa");
+    console.log("index cargado");
     //res.status(200);
     //res.sendFile(__dirname + "/" + "styles.css");
     res.render('index');
@@ -37,13 +39,10 @@ app.get('/',(req,res) => {
     //res.sendFile(path.join(__dirname,'/index.html'));
 });
 
-app.get('/',(req,res) => {
-    console.log("holaa");
-    //res.status(200);
-    //res.sendFile(__dirname + "/" + "styles.css");
-    res.render('index');
-    //podríamos enviar variables al html si hacemos res.render('index', {text: "World"}) y luego en el html Hello <%= text %>
-    //res.sendFile(path.join(__dirname,'/index.html'));
+// Handle POST request from client:
+app.post("/frames", (req,res)=>{
+    console.log( req.body ); // <== Receives: [ 'A', 42, false ]
+    res.status(200).json({ received: req.body }); // Send back a confirmation JSON response
 });
 
 app.listen(port, () => {
