@@ -1,4 +1,3 @@
-
 const canvas = document.getElementById("canvas");
 
 canvas.width = window.innerHeight -60;
