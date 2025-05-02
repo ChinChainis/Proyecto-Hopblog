@@ -91,7 +91,7 @@ function stop(event) {
       index += 1;
    }
 
-   console.log(frame_array);
+   //console.log(frame_array);
 }
 
 function undo(){
@@ -157,51 +157,68 @@ document.getElementById('btn-download-PNG').addEventListener("click", function(e
 document.getElementById('btn-video').addEventListener("click", function(e) {
    console.log(num_frames);
    var pics = [];
+
    for (let i = 0; i < num_frames; i++) {
       var tamtotal = frame_array[i].length - 1;
       context.putImageData(frame_array[i][tamtotal], 0,0);  
       var nomarchivo = 'frame' + i + '.png';
       var a = document.createElement('a');
-      pics.push(a);
+      var canvas = document.querySelector('canvas');
+      //var datosimg = canvas.toDataURL().split(';base64,')[1];
+      var datosimg =  canvas.toDataURL("image/base64", 1.0);
+      pics.push(datosimg);
+      //console.log(pics);
+      //pics.push(frame_array[i]);
+      //pics.push(a);
       //a.click();
+      //console.log("datos: " + JSON.stringify(datosimg));
+      //console.log("pics: " + JSON.stringify(pics));
 
-      let downloadLink = document.createElement('a');
+
+      /*let downloadLink = document.createElement('a');
       downloadLink.setAttribute('download', nomarchivo);
       var canvas = document.querySelector('canvas');
       canvas.toBlob(blob => {
         let url = URL.createObjectURL(blob);
         //downloadLink.setAttribute('href', url);
         //downloadLink.click();
-      });
+      });*/
 
    } 
 
-   //console.log("dentro form");
+   //var datosimg =  canvas.toDataURL("image/jpeg", 1.0);
+
+   console.log("dentro form ");
    // The Array that will be send to the server:
    const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
 
-   const form = document.querySelector("form");
-
+  const form = document.querySelector("form");
+   
    // Handle the form's submit event (when the button Submit gets clicked)
    form.addEventListener("submit", e =>{
       // Prevent the default HTML form submission behavior:
       e.preventDefault();
 
-      // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
-      fetch("http://localhost:3000/frames", {
-         method: "POST",
-         headers: {
-           'Accept': 'application/json',
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify(pics)
-      })
-      .then( res => res.json() ) // <= Handle JSON response from server
-      .then( data => console.log(data) )
-      .catch( error => console.error(error) );   
+      for (let i = 0; i < num_frames; i++) {
+
+         // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
+         fetch("http://localhost:3000/frames", {
+            method: "POST",
+            headers: {
+            //'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: "[" + JSON.stringify(pics[i]) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
+         })
+         .then( res => res.json() ) // <= Handle JSON response from server
+         .then( data => console.log(data) )
+         .catch( error => console.error(error) );   
+      }
+
+
 
    })
-   //console.log(pics);
+   //console.log("pic",pics);
    //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
 
    //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
@@ -221,7 +238,7 @@ document.getElementById('btn-form').addEventListener("click", function(e) {
       e.preventDefault();
 
       // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
-      fetch("http://localhost:3000/colors", {
+      fetch("http://localhost:3000/frames", {
          method: "POST",
          headers: {
            'Accept': 'application/json',
