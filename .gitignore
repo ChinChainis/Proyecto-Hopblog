@@ -2,7 +2,9 @@ procesamiento_video.js
 package-lock.json
 node_modules/
 frames/
+frames2/
 video.mp4
+video3.mp4
 server_envio.js
 schema.sql
 .env
@@ -10,3 +12,4 @@ funciones_sql.js
 funciones.js
 image.png
 videoV2.mp4
+videoV3.mp4
