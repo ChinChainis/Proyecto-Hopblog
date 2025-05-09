@@ -143,18 +143,14 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
 
 document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
    //console.log("holaaa");
-   let downloadLink = document.createElement('a');
+   /*let downloadLink = document.createElement('a');
    downloadLink.setAttribute('download', 'canvas.png');
    var canvas = document.querySelector('canvas');
    canvas.toBlob(blob => {
      let url = URL.createObjectURL(blob);
      downloadLink.setAttribute('href', url);
      downloadLink.click();
-   });
-});
-
-
-document.getElementById('btn-video').addEventListener("click", function(e) {
+   });*/
    console.log(num_frames);
    var pics = [];
 
@@ -175,42 +171,65 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       //console.log("pics: " + JSON.stringify(pics));
 
 
-      /*let downloadLink = document.createElement('a');
+      let downloadLink = document.createElement('a');
       downloadLink.setAttribute('download', nomarchivo);
       var canvas = document.querySelector('canvas');
       canvas.toBlob(blob => {
         let url = URL.createObjectURL(blob);
-        //downloadLink.setAttribute('href', url);
-        //downloadLink.click();
-      });*/
+        downloadLink.setAttribute('href', url);
+        downloadLink.click();
+      });
 
    } 
+
+});
+
+
+document.getElementById('btn-video').addEventListener("click", function(e) {
+   console.log(num_frames);
+   var pics = [];
+   /*
+   for (let i = 0; i < num_frames; i++) {
+      var tamtotal = frame_array[i].length - 1;
+      context.putImageData(frame_array[i][tamtotal], 0,0);  
+      var nomarchivo = 'frame' + i + '.png';
+      var a = document.createElement('a');
+      var canvas = document.querySelector('canvas');
+      //var datosimg = canvas.toDataURL().split(';base64,')[1];
+      var datosimg =  canvas.toDataURL("image/base64", 1.0);
+      pics.push(datosimg);
+   } */
 
    //var datosimg =  canvas.toDataURL("image/jpeg", 1.0);
 
    console.log("dentro form ");
-   // The Array that will be send to the server:
    const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
 
   const form = document.querySelector("form");
    
-   // Handle the form's submit event (when the button Submit gets clicked)
    form.addEventListener("submit", e =>{
-      // Prevent the default HTML form submission behavior:
       e.preventDefault();
 
       for (let i = 0; i < num_frames; i++) {
 
-         // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
+         var tamtotal = frame_array[i].length - 1;
+         context.putImageData(frame_array[i][tamtotal], 0,0);  
+         var nomarchivo = 'frame' + i + '.png';
+         var a = document.createElement('a');
+         var canvas = document.querySelector('canvas');
+         //var datosimg = canvas.toDataURL().split(';base64,')[1];
+         var datosimg =  canvas.toDataURL("image/base64", 1.0);
+         //pics.push(datosimg);
+
+
          fetch("http://localhost:3000/frames", {
             method: "POST",
             headers: {
-            //'Accept': 'application/json',
             'Content-Type': 'application/json'
             },
-            body: "[" + JSON.stringify(pics[i]) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
+            body: "[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
          })
-         .then( res => res.json() ) // <= Handle JSON response from server
+         .then( res => res.json() ) 
          .then( data => console.log(data) )
          .catch( error => console.error(error) );   
       }
