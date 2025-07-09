@@ -1,14 +1,15 @@
 import http from 'http';
 import url from 'url';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
+import fs, { readFile } from 'fs';
 import path from 'path';
 import { dirname } from 'path';
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 
-import {getFrames, getFramesbyId, insertarFrame, getImgbyId, getImgbyTitulo} from './funciones_sql.js';
+
+import {getFrames, getFramesbyId, insertarFrame, getImgbyId, insertaVideo, getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -63,6 +64,145 @@ app.get('/',(req,res) => {
     //res.sendFile(path.join(__dirname,'/index.html'));
 });
 
+app.get('/muestra', async (req,res) => {
+    /*fs.readFile( 
+        "./videoV2.mp4", 'base64', 
+        (err, base64Image) => { 
+            // 2. Create a data URL 
+            const dataUrl = `data:video/mp4;base64, ${base64Image}` 
+            return res.send('<video width="320" height="240" controls> <source src=${dataUrl} type="video/mp4"> Your browser does not support the video tag. </video>'); 
+        } 
+    ); */
+    res.render('preview');
+
+});
+
+app.get('/muestra2', async (req,res) => {
+    const images = await fs.promises.readdir('public/vids')
+    /*      <a href="/">Home</a>
+        ${images.map(i=>`<video width="320" height="240" controls> <source src="/videoV2.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video> `)}*/
+    //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
+    
+    console.log("vidreos: " + images);
+
+    let notes = await getVidbyUrl("./" + images[1]);
+    console.log("resul: " + JSON.stringify(notes[0]["id"]));
+
+    const HTML_ARCH = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link href="/css/style.css" type="text/css" rel="stylesheet">
+        <!--esto resuelve la falta de favicon ico-->
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <h2>Animaciones</h2>
+        ${images.map(i=>`<video width="320" height="240" controls>            
+            <source src="/vids/${i}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video> `).join('') }
+
+    </body>
+    </html>
+    `
+    return res.send(HTML_ARCH);
+});
+
+app.get('/bajavideo', async (req,res) => {
+    const id = req.params.id
+    const notes = await getVidbyAutor("prueba");
+    console.log("base de datos: " + JSON.stringify(notes).split(':"').pop().slice('',-3));
+    let urltemp = JSON.stringify(notes).split(':"').pop().slice('',-3);
+
+    const head = {
+        'Content-Type': 'video/mp4',
+    };
+
+    /*res.writeHead(200, head);
+    fs.createReadStream(urltemp).pipe(res);*/
+    const bitmap = fs.readFileSync(urltemp);
+    const buf = new Buffer(bitmap);
+    fs.writeFile('./pruebaVod.mp4', buf,function(err) {
+        console.log(err);
+    });
+    //console.log("base de datos: " + Buffer.from(notes, 'binary').toString('base64'));
+
+    /*
+    const buf = new Buffer(notes);
+    //let vid = base64Image.split(';base64,').pop();
+    
+    //res.setHeader('Content-Length', myFile.length);
+    res.write(buf, 'binary');
+   
+    //var buf = notes.toString('base64');
+    /*fs.writeFile('./pruebaVod.mp4', buf,function(err) {
+        console.log(err);
+    });*/
+
+});
+
+app.get('/video', async (req,res) => {
+    //res.render('preview');
+    const videoPath = './videoV2.mp4'; // Path to your video file
+    const bitmap = fs.readFileSync(videoPath);
+    const buf = new Buffer(bitmap);
+    let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
+    const vid = insertaVideo(id_rand,"prueba", videoPath);
+    //console.log("base de datos actualizada: " + buf);
+
+    //const file = fs.createReadStream(videoPath).pipe(res);
+    /*const readimagem = fs.readFileSync(videoPath);
+    const imagemBase64 = Buffer.from(readimagem).toString('base64');
+    console.log("archivo: " + JSON.stringify(imagemBase64));
+    let stringy = JSON.stringify(imagemBase64)*/
+    /*let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
+    let bitmap = fs.readFileSync(videoPath, {encoding: 'base64'});*/
+    /*let buf = new Buffer(bitmap);
+    var file = new Blob(
+        [buf],
+        {"type" : "video\/mp4"});
+    var bufferBase64 = new Buffer( file, 'binary' ).toString('base64');*/
+    //const vid = insertaVideo(id_rand,"prueba", bitmap);
+    //console.log("base de datos actualizada: " + vid);
+
+
+    /*const videoPath = './videoV2.mp4'; // Path to your video file
+    const stat = fs.statSync(videoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = end - start + 1;
+        const file = fs.createReadStream(videoPath, { start, end });
+        const head = {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunkSize,
+            'Content-Type': 'video/mp4',
+        };
+
+        res.writeHead(206, head);
+        file.pipe(res);
+    } else {
+        const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        };
+
+        res.writeHead(200, head);
+        fs.createReadStream(videoPath).pipe(res);
+    }    */
+});
+
 
 app.get('/notes', async (req,res) => {
     const notes = await getFrames()
@@ -71,8 +211,10 @@ app.get('/notes', async (req,res) => {
 });
 
 app.get('/notes/:id', async (req,res) => {
+    //ej http://127.0.0.1:3000/notes/id:2
     const id = req.params.id
     const notes = await getFramesbyId(id)
+    console.log("uaaaaa" + id);
     console.log("base de datos: " + notes);
     res.send(notes);
 });
@@ -94,16 +236,16 @@ app.post("/frames", upload.single('file'), (req,res)=>{
 
     var buff = Buffer.from(base64Image).toString("base64");
 
-    const frame = insertarFrame(id_rand,"animacion_insert", inBase64Format);
+    const frame = insertarFrame(id_rand,"animacion_insert_8jul_2", inBase64Format);
     console.log("base de datos actualizada: " + frame);
 
-    
-    
 });
 
 app.get('/creavideo', async (req,res) => {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+
     const id = req.params.id
-    const notes = await getImgbyTitulo("animacion_insert");
+    const notes = await getImgbyTitulo("animacion_insert_8jul_2");
     console.log("base de datos: " + notes.length);
     for (let i = 0; i < notes.length; i++) {
         let numframe = JSON.stringify(notes[i]).slice(11,12);
