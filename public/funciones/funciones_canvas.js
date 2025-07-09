@@ -20,6 +20,12 @@ let num_frames = 1;
 let restore_array = [];
 let index = -1;
 
+var tmpspan= document.getElementById('spanpag');
+tmpspan.textContent = index_frame + 1;
+
+var tmpspant= document.getElementById('spantot');
+tmpspant.textContent = num_frames;
+
 
 function change_color(element){
    draw_color = element.style.background;
@@ -232,8 +238,11 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          .then( res => res.json() ) 
          .then( data => console.log(data) )
          .catch( error => console.error(error) );   
-      }
-
+      };
+      //poner tiempo de espera equivalente al número de frames?
+      setTimeout(function(){
+         fetch("http://localhost:3000/creavideo");
+      }, 2000);
 
 
    })
@@ -255,8 +264,10 @@ document.getElementById('btn-form').addEventListener("click", function(e) {
   form.addEventListener("submit", e =>{
       // Prevent the default HTML form submission behavior:
       e.preventDefault();
-
-      // Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
+      console.log((document.getElementById("fname").value).replace(/ /g,"_"));
+      let numnote = (document.getElementById("fname").value).replace(/ /g,"_");
+      fetch("http://localhost:3000/notes/id:"+numnote);
+      /*// Send the Array as a stringified JSON to the server via an Ajax request using the Fetch API:
       fetch("http://localhost:3000/frames", {
          method: "POST",
          headers: {
@@ -268,42 +279,63 @@ document.getElementById('btn-form').addEventListener("click", function(e) {
       .then( res => res.json() ) // <= Handle JSON response from server
       .then( data => console.log(data) )
       .catch( error => console.error(error) );   
-
+   */
    })
 });
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
    index_frame += 1;
+   tmpspan.textContent = index_frame + 1;
+   
    if (index_frame >= num_frames){
       clear_canvas();
       num_frames += 1;
-      index = -1;
+      //index = -1;
+      tmpspant.textContent = num_frames;
+
       restore_array = [];
       console.log("num. frames: ",num_frames);
-   }else if(frame_array[index_frame].length >= 1){
+   }else{
       console.log("frame: ",index_frame);
-      console.log("indice: ",index);
+      //console.log("indice: ",index);
+      index = frame_array[index_frame].length - 1;
+      context.putImageData(frame_array[index_frame][index], 0,0);  
+   }
+   
+   /*else if(frame_array[index_frame].length >= 1){
+      console.log("frame: ",index_frame);
+      //console.log("indice: ",index);
       index = frame_array[index_frame].length - 1;
       context.putImageData(frame_array[index_frame][index], 0,0);       
    }else{
       index = 0;
-   }
+   }*/
    console.log("frame: ",index_frame);
-   console.log("indice: ",index);
+   //console.log("indice: ",index);
 });
 
 document.getElementById('btn-before').addEventListener("click", function(e) {
    if (index_frame > 0){
+      
       index_frame -= 1;
+      tmpspan.textContent = index_frame + 1;
+
+      if(frame_array[index_frame].length == 0){
+         console.log("aa");
+      }
       if(frame_array[index_frame].length >= 1){
          index = frame_array[index_frame].length - 1;
          console.log("frame: ",index_frame);
          console.log("indice: ",index);
-         context.putImageData(frame_array[index_frame][index], 0,0);    
+         context.putImageData(frame_array[index_frame][index], 0,0); 
+               
       }else{
          index = 0;
       }
+   }
+   else{
+      console.log("frena que no hay más");
    }
    console.log("frame: ",index_frame);
    console.log("indice: ",index);
