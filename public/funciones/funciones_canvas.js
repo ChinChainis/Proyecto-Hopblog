@@ -215,7 +215,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
    
    form.addEventListener("submit", e =>{
       e.preventDefault();
-
+      let numnote = (document.getElementById("fname").value).replace(/ /g,"_");
       for (let i = 0; i < num_frames; i++) {
 
          var tamtotal = frame_array[i].length - 1;
@@ -228,7 +228,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          //pics.push(datosimg);
 
 
-         fetch("http://localhost:3000/frames", {
+         fetch("http://localhost:3000/frames/"+numnote, {
             method: "POST",
             headers: {
             'Content-Type': 'application/json'
@@ -241,7 +241,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       };
       //poner tiempo de espera equivalente al número de frames?
       setTimeout(function(){
-         fetch("http://localhost:3000/creavideo");
+         fetch("http://localhost:3000/creavideo/"+numnote);
       }, 2000);
 
 
