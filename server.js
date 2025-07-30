@@ -7,9 +7,10 @@ import { dirname } from 'path';
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import session from 'express-session';
 
 
-import {getFrames, getFramesbyId, insertarFrame, getImgbyId, insertaVideo, getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getFrames, getFramesbyId, insertarFrame, getUsuario, insertaVideo, getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -18,7 +19,8 @@ ffmpeg.setFfmpegPath(ffmpegStatic);
 
 
 const app = express();
-const origin = ""
+const origin = "";
+var router = express.Router();
 
 //CORS
 //https://es.stackoverflow.com/questions/618761/error-de-cors-en-nodejs-con-react
@@ -51,6 +53,66 @@ app.set('view engine','ejs');
 
 app.use(express.static(path.join(__dirname,'public')));
 app.use( express.json() ); // <== Make sure we can handle JSON data from the client
+
+
+app.use(session({
+    secret : '12345689',//clave cualquiera
+    resave : true,
+    saveUninitialized : true
+}));
+
+app.get('/seguridad',(req,res) => {
+    res.render('seguridad',{session: req.session});
+    /*req.session.usuario = "Antonio";
+    req.session.rol = "Admin";
+    req.session.visitas = req.session.visitas ? ++req.session.visitas : 1 ;
+
+    res.send(`el usuario <strong>${req.session.usuario}</strong> de rango 
+        <strong>${req.session.rol}</strong> ha visitado 
+        <strong>${req.session.visitas}</strong> veces.` );*/
+});
+
+app.get('/seguridadresul',(req,res) => {
+    console.log(req.session);
+    res.render('index', { session : req.session });
+});
+
+app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
+    var user_mail_address = req.body.user_email;
+    var user_password = req.body.user_password;
+    console.log("fueraaa",user_mail_address );
+    if(user_mail_address && user_password){
+        //console.log("aaaa",user_mail_address);
+        //res.redirect("/");
+        const notes = await getUsuario(user_mail_address);
+        //console.log("contrasenia: ",notes[0].contrasenia);
+
+        console.log(notes);
+        if(notes.length > 0){
+            if( user_password == notes[0].contrasenia ){
+                res.redirect("/");
+            }else{
+                console.log("contraseña incorrecta");
+                req.session.user_email = user_mail_address;
+                res.redirect('seguridad');
+            }
+            
+        }else{
+            console.log("usuario incorrecto");
+            res.redirect('seguridad');
+        }
+    }else{
+        res.send('introduce mail y contraseña');
+        res.end();
+    }
+
+});
+
+app.get('/logout',function(request,response,next){
+    request.session.destroy();
+    response.redirect("/");
+})
+
 
 var contador = null
 
@@ -205,9 +267,36 @@ app.get('/video', async (req,res) => {
 
 
 app.get('/notes', async (req,res) => {
-    const notes = await getFrames()
+    const foldPath = './borrar';
+
+    fs.readdir(foldPath, function(err, files) {
+    const txtFiles = files.filter(el => path.extname(el) === '.png');
+    console.log(txtFiles);
+        for (let i = 0; i < txtFiles.length; i++) {
+            let filePath = foldPath + "/" + txtFiles[i];
+            console.log(filePath);
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error(`Error removing file: ${err}`);
+                    return;
+                }
+
+                console.log(`File ${filePath} has been successfully removed.`);
+            });
+        }
+    })
+    /*
+    fs.unlink(filePath, (err) => {
+    if (err) {
+        console.error(`Error removing file: ${err}`);
+        return;
+    }
+
+    console.log(`File ${filePath} has been successfully removed.`);
+    });*/
+    /*const notes = await getFrames()
     console.log("base de datos: " + notes);
-    res.send(notes);
+    res.send(notes);*/
 });
 
 app.get('/notes/:id', async (req,res) => {
@@ -241,11 +330,74 @@ app.post("/frames", upload.single('file'), (req,res)=>{
 
 });
 
+
+app.post("/frames/:nombre", upload.single('file'), (req,res)=>{
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', origin);
+
+    const nom = req.params.nombre;
+
+    console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
+    var inBase64Format  = JSON.stringify(req.body )
+
+    console.log("dentro server parte principio " + inBase64Format.slice(1,2)); 
+    let numframe = inBase64Format.slice(1,2);
+
+    let base64Image = inBase64Format.split(';base64,').pop();   
+    
+    //let r = Math.floor((Math.random())*1000)+100;
+    let id_rand = Math.random() * (10000 - 1000) + 1000;
+
+    var buff = Buffer.from(base64Image).toString("base64");
+
+    const frame = insertarFrame(id_rand,nom, inBase64Format);
+    console.log("base de datos actualizada: " + frame);
+
+});
+
+
 app.get('/creavideo', async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
 
     const id = req.params.id
     const notes = await getImgbyTitulo("animacion_insert_8jul_2");
+    console.log("base de datos: " + notes.length);
+    for (let i = 0; i < notes.length; i++) {
+        let numframe = JSON.stringify(notes[i]).slice(11,12);
+
+        let base64Image = JSON.stringify(notes[i]).split(';base64,').pop();
+        console.log("BUFF: " + numframe);
+        fs.writeFile('./frames2/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
+            console.log('File created');
+        });
+    }
+
+    ffmpeg()
+
+        .input('frames2/frame%01d.png')
+        .inputOptions('-framerate', '10')
+        .videoCodec('libx264')
+        .saveToFile('videoV3.mp4')
+        .on('progress', (progress) => {
+            if (progress.percent) {
+            console.log(`Processing: ${Math.floor(progress.percent)}% done`);
+            }
+        })
+        .on('end', () => {
+            console.log('FFmpeg has finished.');
+        })
+        .on('error', (error) => {
+            console.error(error);
+        });
+    //res.send(notes);
+});
+
+
+app.get('/creavideo/:nombre', async (req,res) => {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+
+    const nom = req.params.nombre;
+    const notes = await getImgbyTitulo(nom);
     console.log("base de datos: " + notes.length);
     for (let i = 0; i < notes.length; i++) {
         let numframe = JSON.stringify(notes[i]).slice(11,12);
