@@ -34,6 +34,13 @@ app.use(cors(corsOptions)); // Use the cors middleware with your options
 */
 app.use(cors());
 
+function loginRequired(req, res, next) {
+  if (!req.session.passport || !req.session.passport.user)
+    return res.status(401).json({status: 'Please log in'});
+  return next();
+}
+
+
 
 const upload = multer({dest: 'frames/'})
 
@@ -90,10 +97,10 @@ app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
         console.log(notes);
         if(notes.length > 0){
             if( user_password == notes[0].contrasenia ){
-                res.redirect("/");
+                req.session.user_email = notes[0].nick ;
+                res.redirect('seguridad');
             }else{
                 console.log("contraseña incorrecta");
-                req.session.user_email = user_mail_address;
                 res.redirect('seguridad');
             }
             
@@ -110,7 +117,7 @@ app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
 
 app.get('/logout',function(request,response,next){
     request.session.destroy();
-    response.redirect("/");
+    response.redirect("seguridad");
 })
 
 
@@ -146,35 +153,71 @@ app.get('/muestra2', async (req,res) => {
             Your browser does not support the video tag.
         </video> `)}*/
     //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
-    
+
+    //        <h1>Hi User, Welcome ${session.user_email} </h1>
+
+
     console.log("vidreos: " + images);
+    //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
+    //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
+    //console.log("resul: " + JSON.stringify(notes[0]["id"]));
 
-    let notes = await getVidbyUrl("./" + images[1]);
-    console.log("resul: " + JSON.stringify(notes[0]["id"]));
+    for (let i = 0; i < images.length; i++) {
+        let nomv =images[i];
+        if(nomv == "videoV2.mp4"){
+            let notes = await getVidbyUrl("./" + nomv); //es el de pos 2
+            console.log("resul: " + JSON.stringify(notes[0]["id"]));
+        }
+    }
 
-    const HTML_ARCH = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <link href="/css/style.css" type="text/css" rel="stylesheet">
-        <!--esto resuelve la falta de favicon ico-->
-        <link rel="shortcut icon" href="#">
-    </head>
-    <body>
-        <h2>Animaciones</h2>
-        ${images.map(i=>`<video width="320" height="240" controls>            
-            <source src="/vids/${i}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video> `).join('') }
+    if(req.session.user_email){
+        const HTML_ARCH = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+            <link href="/css/style.css" type="text/css" rel="stylesheet">
+            <!--esto resuelve la falta de favicon ico-->
+            <link rel="shortcut icon" href="#">
+        </head>
+        <body>
+            <h2>Animaciones</h2>
+            <div class="indice">
+                <a href="/">Inicio </a>
+                <a href="/seguridad">Perfil </a>
+                <a href="">Usuarios</a> 
+                <a href="/muestra2">Galería</a> 
+            </div>
 
-    </body>
-    </html>
-    `
-    return res.send(HTML_ARCH);
+
+
+            ${images.map(i=>`<video width="320" height="240" controls>            
+                <source src="/vids/${i}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video> `).join('') }
+
+        </body>
+        </html>
+        `
+        return res.send(HTML_ARCH);
+    }else{
+        console.log("EEEEEEEEEEEEEEEE LOGEATE");
+        res.redirect('seguridad');
+    }
+
 });
+
+app.get('/preview', async (req,res) => {
+    var name = 'Frogberto2.mp4';
+    res.render('preenviado', {name:name});
+
+});
+
+
+
+
 
 app.get('/bajavideo', async (req,res) => {
     const id = req.params.id
@@ -414,7 +457,7 @@ app.get('/creavideo/:nombre', async (req,res) => {
         .input('frames2/frame%01d.png')
         .inputOptions('-framerate', '10')
         .videoCodec('libx264')
-        .saveToFile('videoV3.mp4')
+        .saveToFile(nom+'.mp4')
         .on('progress', (progress) => {
             if (progress.percent) {
             console.log(`Processing: ${Math.floor(progress.percent)}% done`);
