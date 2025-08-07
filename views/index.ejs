@@ -12,14 +12,19 @@
         <h1>Título</h1>
         <div class="indice">
             <a href="">Inicio </a>
-            <a href="">Perfil </a>
+            <a href="/seguridad">Perfil </a>
             <a href="">Usuarios</a> 
+            <a href="/muestra2">Galería</a> 
         </div>
-        <span id="spantot"></span>
-        <span id="span">/</span>
-        <span id="spanpag"></span>
+
 
         <div class="field">
+
+            <div class="grupospan">
+                <span id="spanpag"></span>
+                <span id="spanbarra">/</span>
+                <span id="spantot"></span>
+            </div>
                            
             <div class="lienzoyherra">
                 <div class="container">
@@ -27,30 +32,40 @@
                 </div> 
 
                 <div class="tools">
-                    <button onClick="undo()" type="button" class="button">Undo</button>
-                    <button onClick="clear_canvas()" type="button" class="button">Clear</button>
+                    <button onClick="undo()" type="button" class="button" id="undob"></button>
+                    <input onInput="draw_width = this.value" type="range" min="1" max="3" class="pen-range">
 
+                    <div onClick="change_color(this)" class="color-field" style="background: white;" id="goma">Goma</div>
                     <div onClick="change_color(this)" class="color-field" style="background: red;"></div>
                     <div onClick="change_color(this)" class="color-field" style="background: blue;"></div>
                     <div onClick="change_color(this)" class="color-field" style="background: green;"></div>
 
                     <input onInput="draw_color = this.value" type="color" class="color-picker">
-                    <input onInput="draw_width = this.value" type="range" min="1" max="3" class="pen-range">
                 </div>
             </div> 
-            <div class="undoredo">
+
+
+        </div>
+        <div id="botones_aux">
+            <button onClick="clear_canvas()" type="button" class="button" id="borratodo">Clear</button>
+
+            <div class="pasoframe">
                 <button id="btn-before">Ant. Frame</button>     
                 <button id="btn-next">Sig. Frame</button>     
             </div>
-
         </div>
-        <button id="btn-download-PNG">Guardar frame</button>   
-        <form enctype="multipart/form-data">
-            <button id="btn-video">Guardar video</button>    
-            <button id="btn-form">Envia form</button>
-            <input type="text" id="fname" name="fname" value="Titulo_de_animacion"><br><br>
-        </form>
+
+
+        <!--<button id="btn-download-PNG">Guardar frame</button>   -->
+        <div id="guarda">
+            <form enctype="multipart/form-data">
+                <!--<button id="btn-form">Envia form</button>-->
+                <input type="text" id="fname" name="fname" value="Titulo_de_animacion"><br><br>
+                <button id="btn-video"></button>    
+            </form>
             <!--<button id="btn-sql">llama sql</button>    -->
+        </div>
+
 
     </body>
     <script src="/funciones/funciones_canvas.js"></script>
