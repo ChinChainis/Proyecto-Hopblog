@@ -3,6 +3,7 @@ package-lock.json
 node_modules/
 frames/
 frames2/
+public/vids/
 video.mp4
 video3.mp4
 server_envio.js
