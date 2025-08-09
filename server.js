@@ -10,7 +10,7 @@ import multer from 'multer';
 import session from 'express-session';
 
 
-import {getFrames, getFramesbyId, insertarFrame, getUsuario, insertaVideo, getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getFrames, getFramesbyId, insertarFrame, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -209,13 +209,43 @@ app.get('/muestra2', async (req,res) => {
 
 });
 
-app.get('/preview', async (req,res) => {
-    var name = 'Frogberto2.mp4';
+app.get('/preview/:nombre', async (req,res) => {
+    //var name = 'anima2.mp4';
+    let name = req.params.nombre + '.mp4';
+    console.log('dentro preview: ',name);
     res.render('preenviado', {name:name});
 
 });
 
 
+app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
+    var etiquetas = req.body.etiquetas;
+    var privado = req.body.privadocheck;
+    let listaetiq = etiquetas.split(',');
+    let nomvid = req.body.vidname;
+    console.log("nombre: ", nomvid);
+    console.log("uploadd: ",etiquetas, " privado: ", privado);
+    console.log("boton: ",req.body.botonform);
+    if(req.body.botonform == 'Subir!'){
+        let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
+
+        if(privado!='ok'){
+            console.log("no es privado");
+            //const vid = insertaVideo3(id_rand,'Antonio', nomvid,etiquetas,false);
+        }else{
+            console.log("es privado");
+            //const vid = insertaVideo3(id_rand,'Antonio', nomvid,etiquetas,true);
+        }
+    }else{
+        let nomog = nomvid.split('.')
+        const vid = deleteIMG(nomog[0]);
+        //console.log(vid);
+    }
+
+
+
+    res.redirect('/'); //tmp
+});
 
 
 
@@ -436,8 +466,30 @@ app.get('/creavideo', async (req,res) => {
 });
 
 
-app.get('/creavideo/:nombre', async (req,res) => {
+app.get('/creavideo/:nombre',async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
+
+    const foldPath = './frames2';
+
+    fs.readdir(foldPath, function(err, files) {
+    const txtFiles = files.filter(el => path.extname(el) === '.png');
+    console.log(txtFiles);
+        for (let i = 0; i < txtFiles.length; i++) {
+            let filePath = foldPath + "/" + txtFiles[i];
+            console.log(filePath);
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error(`Error removing file: ${err}`);
+                    return;
+                }
+
+                console.log(`File ${filePath} has been successfully removed.`);
+            });
+        }
+    })
+
+
+
 
     const nom = req.params.nombre;
     const notes = await getImgbyTitulo(nom);
@@ -457,21 +509,23 @@ app.get('/creavideo/:nombre', async (req,res) => {
         .input('frames2/frame%01d.png')
         .inputOptions('-framerate', '10')
         .videoCodec('libx264')
-        .saveToFile(nom+'.mp4')
+        .saveToFile('public/vids/'+nom+'.mp4')
         .on('progress', (progress) => {
             if (progress.percent) {
             console.log(`Processing: ${Math.floor(progress.percent)}% done`);
             }
         })
         .on('end', () => {
-            console.log('FFmpeg has finished.');
+            console.log('FFmpeg con nombre has finished.');
+            //res.redirect('/preview');            
         })
         .on('error', (error) => {
             console.error(error);
         });
+    //res.render('preenviado');
     //res.send(notes);
-});
 
+});
 
 // Handle POST request from client:
 app.post("/frames_ant", upload.single('file'), (req,res)=>{
