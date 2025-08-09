@@ -26,6 +26,7 @@ tmpspan.textContent = index_frame + 1;
 var tmpspant= document.getElementById('spantot');
 tmpspant.textContent = num_frames;
 
+var spanloading= document.getElementById('spanload');
 
 function change_color(element){
    draw_color = element.style.background;
@@ -198,11 +199,12 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
    } */
 
    //var datosimg =  canvas.toDataURL("image/jpeg", 1.0);
+   spanloading.textContent = "<h3>por favor espera!</h3>";
 
    console.log("dentro form ");
    const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
 
-  const form = document.querySelector("form");
+   const form = document.querySelector("form");
    
    form.addEventListener("submit", e =>{
       e.preventDefault();
@@ -234,8 +236,12 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       setTimeout(function(){
          fetch("http://localhost:3000/creavideo/"+numnote);
       }, 2000);
+      let tiemp = 2000 + (num_frames*1000);
+      setTimeout(function(){
+         spanloading.textContent = "";
 
-
+         window.location.href = "http://localhost:3000/preview/"+numnote;
+      }, tiemp);
    })
    //console.log("pic",pics);
    //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
