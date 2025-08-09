@@ -18,16 +18,18 @@
             </div>
 
 
-
+            <h3><%= name %></h3>
             <video width="320" height="240" controls>            
                 <source src="/vids/<%= name %>" type="video/mp4">
                 Your browser does not support the video tag.
             </video> 
             <form method="post" action="/upload">
-                <input type="text-area" name="user_email" class="form-control" />
-                <input type="radio" id="privado" name="privadocheck" value="privacidad">
+                <input type="hidden" id="namevideo" name="vidname" value='<%= name %>'>
+                <input type="text-area" name="etiquetas" class="form-control" />
+                <input type="checkbox" id="privado" name="privadocheck" value="ok">
                 <label for="privado">¿Privado?</label><br>
-                <input type="submit" class="btn btn-primary" value="Subir!" />
+                <input type="submit" class="btn btn-primary" value="Subir!" name="botonform" />
+                <input type="submit" class="btn btn-primary" value="Borrar" name="botonform" />
             </form>
 
         </body>
