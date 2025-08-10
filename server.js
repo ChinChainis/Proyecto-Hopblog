@@ -10,7 +10,7 @@ import multer from 'multer';
 import session from 'express-session';
 
 
-import {getFrames, getFramesbyId, insertarFrame, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getImgIDbyId,insertarFrameID,getFramesbyId, deleteIMGID, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -161,16 +161,17 @@ app.get('/muestra2', async (req,res) => {
     //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
     //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
     //console.log("resul: " + JSON.stringify(notes[0]["id"]));
-
+    let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
-        if(nomv == "videoV2.mp4"){
-            let notes = await getVidbyUrl("./" + nomv); //es el de pos 2
-            console.log("resul: " + JSON.stringify(notes[0]["id"]));
+        let notes = await getVidbyUrl(nomv); 
+        if(notes.length > 0){
+            console.log("resul: " + JSON.stringify(notes[0]));
+            newvidreos.push(nomv);
         }
     }
 
-    if(req.session.user_email){
+    //if(req.session.user_email){
         const HTML_ARCH = `
         <!DOCTYPE html>
         <html lang="en">
@@ -202,6 +203,76 @@ app.get('/muestra2', async (req,res) => {
         </html>
         `
         return res.send(HTML_ARCH);
+    //}else{
+    //    console.log("EEEEEEEEEEEEEEEE LOGEATE");
+    //    res.redirect('seguridad');
+    //}
+
+});
+
+app.get('/usuario/:nombre', async (req,res) => {
+    const images = await fs.promises.readdir('public/vids')
+    /*      <a href="/">Home</a>
+        ${images.map(i=>`<video width="320" height="240" controls> <source src="/videoV2.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video> `)}*/
+    //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
+
+    //        <h1>Hi User, Welcome ${session.user_email} </h1>
+
+
+    console.log("vidreos: " + images);
+    //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
+    //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
+    //console.log("resul: " + JSON.stringify(notes[0]["id"]));
+    let newvidreos = [];
+    for (let i = 0; i < images.length; i++) {
+        let nomv =images[i];
+        let notes = await getVidbyUrl(nomv); 
+        if(notes.length > 0){
+            /*if( notes[0]["privado"] != 1 ){
+                console.log("resul: " + JSON.stringify(notes[0]));
+                newvidreos.push(nomv);
+            }*/
+           if( notes[0]["autor"] == req.session.user_email ){
+                console.log("resul: " + JSON.stringify(notes[0]));
+                newvidreos.push(nomv);
+            }
+        }
+    }
+
+    if(req.session.user_email){
+        const HTML_ARCH = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+            <link href="/css/style.css" type="text/css" rel="stylesheet">
+            <!--esto resuelve la falta de favicon ico-->
+            <link rel="shortcut icon" href="#">
+        </head>
+        <body>
+            <h2>Animaciones</h2>
+            <div class="indice">
+                <a href="/">Inicio </a>
+                <a href="/seguridad">Perfil </a>
+                <a href="">Usuarios</a> 
+                <a href="/muestra2">Galería</a> 
+            </div>
+
+
+
+            ${newvidreos.map(i=>`<video width="320" height="240" controls>            
+                <source src="/vids/${i}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video> `).join('') }
+
+        </body>
+        </html>
+        `
+        return res.send(HTML_ARCH);
     }else{
         console.log("EEEEEEEEEEEEEEEE LOGEATE");
         res.redirect('seguridad');
@@ -209,11 +280,12 @@ app.get('/muestra2', async (req,res) => {
 
 });
 
-app.get('/preview/:nombre', async (req,res) => {
+app.get('/preview/:id/:nombre', async (req,res) => {
     //var name = 'anima2.mp4';
     let name = req.params.nombre + '.mp4';
+    let id = Math.round(req.params.id);
     console.log('dentro preview: ',name);
-    res.render('preenviado', {name:name});
+    res.render('preenviado', {name:name,idanim:id});
 
 });
 
@@ -223,6 +295,7 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
     var privado = req.body.privadocheck;
     let listaetiq = etiquetas.split(',');
     let nomvid = req.body.vidname;
+    let idvid = req.body.vidid;
     console.log("nombre: ", nomvid);
     console.log("uploadd: ",etiquetas, " privado: ", privado);
     console.log("boton: ",req.body.botonform);
@@ -231,14 +304,14 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
 
         if(privado!='ok'){
             console.log("no es privado");
-            //const vid = insertaVideo3(id_rand,'Antonio', nomvid,etiquetas,false);
+            //const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,false);
         }else{
             console.log("es privado");
-            //const vid = insertaVideo3(id_rand,'Antonio', nomvid,etiquetas,true);
+            //const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,true);
         }
     }else{
-        let nomog = nomvid.split('.')
-        const vid = deleteIMG(nomog[0]);
+        //let nomog = nomvid.split('.')
+        const vid = deleteIMGID(idvid);
         //console.log(vid);
     }
 
@@ -381,34 +454,16 @@ app.get('/notes/:id', async (req,res) => {
     res.send(notes);
 });
 
-app.post("/frames", upload.single('file'), (req,res)=>{
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', origin);
-
-    console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
-    var inBase64Format  = JSON.stringify(req.body )
-
-    console.log("dentro server parte principio " + inBase64Format.slice(1,2)); 
-    let numframe = inBase64Format.slice(1,2);
-
-    let base64Image = inBase64Format.split(';base64,').pop();   
-    
-    //let r = Math.floor((Math.random())*1000)+100;
-    let id_rand = Math.random() * (10000 - 1000) + 1000;
-
-    var buff = Buffer.from(base64Image).toString("base64");
-
-    const frame = insertarFrame(id_rand,"animacion_insert_8jul_2", inBase64Format);
-    console.log("base de datos actualizada: " + frame);
-
-});
 
 
-app.post("/frames/:nombre", upload.single('file'), (req,res)=>{
+app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', origin);
 
     const nom = req.params.nombre;
+    const id_ani = req.params.id;
+
+    console.log("dentro creavideo:" + id_ani);
 
     console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
     var inBase64Format  = JSON.stringify(req.body )
@@ -423,50 +478,14 @@ app.post("/frames/:nombre", upload.single('file'), (req,res)=>{
 
     var buff = Buffer.from(base64Image).toString("base64");
 
-    const frame = insertarFrame(id_rand,nom, inBase64Format);
+    const frame = insertarFrameID(id_rand,id_ani,nom, inBase64Format);
     console.log("base de datos actualizada: " + frame);
 
 });
 
 
-app.get('/creavideo', async (req,res) => {
-    res.setHeader('Access-Control-Allow-Origin', origin);
 
-    const id = req.params.id
-    const notes = await getImgbyTitulo("animacion_insert_8jul_2");
-    console.log("base de datos: " + notes.length);
-    for (let i = 0; i < notes.length; i++) {
-        let numframe = JSON.stringify(notes[i]).slice(11,12);
-
-        let base64Image = JSON.stringify(notes[i]).split(';base64,').pop();
-        console.log("BUFF: " + numframe);
-        fs.writeFile('./frames2/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
-            console.log('File created');
-        });
-    }
-
-    ffmpeg()
-
-        .input('frames2/frame%01d.png')
-        .inputOptions('-framerate', '10')
-        .videoCodec('libx264')
-        .saveToFile('videoV3.mp4')
-        .on('progress', (progress) => {
-            if (progress.percent) {
-            console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-            }
-        })
-        .on('end', () => {
-            console.log('FFmpeg has finished.');
-        })
-        .on('error', (error) => {
-            console.error(error);
-        });
-    //res.send(notes);
-});
-
-
-app.get('/creavideo/:nombre',async (req,res) => {
+app.get('/creavideo/:id/:nombre',async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
 
     const foldPath = './frames2';
@@ -486,16 +505,22 @@ app.get('/creavideo/:nombre',async (req,res) => {
                 console.log(`File ${filePath} has been successfully removed.`);
             });
         }
-    })
+    });
 
 
 
+    let id_ani_prev = req.params.id;
+    const id_ani = Math.round(id_ani_prev);
 
     const nom = req.params.nombre;
-    const notes = await getImgbyTitulo(nom);
+
+    console.log("dentro creavideo:" + id_ani);
+
+    const notes = await getImgIDbyId(id_ani);
     console.log("base de datos: " + notes.length);
     for (let i = 0; i < notes.length; i++) {
-        let numframe = JSON.stringify(notes[i]).slice(11,12);
+        let numtemp = JSON.stringify(notes[i]).split(',');
+        let numframe = numtemp[0].slice(11,);
 
         let base64Image = JSON.stringify(notes[i]).split(';base64,').pop();
         console.log("BUFF: " + numframe);
@@ -527,48 +552,6 @@ app.get('/creavideo/:nombre',async (req,res) => {
 
 });
 
-// Handle POST request from client:
-app.post("/frames_ant", upload.single('file'), (req,res)=>{
-    console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
-    var inBase64Format  = JSON.stringify(req.body )
-    //var inBase64Format  = btoa(req.body )
-    /*var stringreq = toString(req.body)
-    var buff = Buffer.from(inBase64Format).toString("base64");*/
-    //console.log("contadoooor : " + contador)
-    //contador += 1
-
-    console.log("dentro server parte principio " + inBase64Format.slice(1,2)); 
-    let numframe = inBase64Format.slice(1,2);
-
-    let base64Image = inBase64Format.split(';base64,').pop();
-    //console.log("BUFF: " + buff)
-    //let r = (Math.random() + 1).toString(36).substring(7)
-    let r = Math.floor((Math.random())*1000)+100;
-
-    fs.writeFile('./frames2/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
-        console.log('File created');
-    });
-    
-    ffmpeg()
-
-    .input('frames2/frame%01d.png')
-    .inputOptions('-framerate', '10')
-    .videoCodec('libx264')
-    .saveToFile('videoV3.mp4')
-    .on('progress', (progress) => {
-        if (progress.percent) {
-        console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-        }
-    })
-    .on('end', () => {
-        console.log('FFmpeg has finished.');
-    })
-    .on('error', (error) => {
-        console.error(error);
-  });
-
-    res.status(200).json({ received: req.body });
-});
 
 app.listen(port, () => {
     console.log("Conectado");
