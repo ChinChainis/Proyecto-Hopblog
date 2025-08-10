@@ -199,13 +199,14 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
    } */
 
    //var datosimg =  canvas.toDataURL("image/jpeg", 1.0);
-   spanloading.textContent = "<h3>por favor espera!</h3>";
+   spanloading.textContent = "por favor espera!";
 
    console.log("dentro form ");
    const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
 
    const form = document.querySelector("form");
-   
+   let id_rand = Math.random() * (100000 - 10000) + 10000;
+
    form.addEventListener("submit", e =>{
       e.preventDefault();
       let numnote = (document.getElementById("fname").value).replace(/ /g,"_");
@@ -220,8 +221,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          var datosimg =  canvas.toDataURL("image/base64", 1.0);
          //pics.push(datosimg);
 
-
-         fetch("http://localhost:3000/frames/"+numnote, {
+         fetch("http://localhost:3000/frames/"+id_rand+"/"+numnote, {
             method: "POST",
             headers: {
             'Content-Type': 'application/json'
@@ -234,13 +234,13 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       };
       //poner tiempo de espera equivalente al número de frames?
       setTimeout(function(){
-         fetch("http://localhost:3000/creavideo/"+numnote);
+         fetch("http://localhost:3000/creavideo/"+id_rand+"/"+numnote);
       }, 2000);
       let tiemp = 2000 + (num_frames*1000);
       setTimeout(function(){
          spanloading.textContent = "";
 
-         window.location.href = "http://localhost:3000/preview/"+numnote;
+         window.location.href = "http://127.0.0.1:3000/preview/"+id_rand+"/"+numnote;
       }, tiemp);
    })
    //console.log("pic",pics);
