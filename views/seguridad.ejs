@@ -39,6 +39,9 @@
 
                     <h1>Hi User, Welcome <%= session.user_email %></h1>
 
+                    <a href="/usuario/<%= session.user_email %>">Perfil </a><br>
+
+
                     <a href="/logout" class="btn btn-primary">Logout</a>
 
                 <% } else { %>
