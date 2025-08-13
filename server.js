@@ -8,9 +8,9 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import session from 'express-session';
+import app from './video.js'
 
-
-import {getImgIDbyId,insertarFrameID,getFramesbyId, deleteIMGID, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getImgIDbyId,insertarFrameID,getFramesbyId, deleteIMGID, getUsuario,insertaUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -18,7 +18,7 @@ import { type } from 'os';
 ffmpeg.setFfmpegPath(ffmpegStatic);
 
 
-const app = express();
+//const app = express();
 const origin = "";
 var router = express.Router();
 
@@ -68,6 +68,52 @@ app.use(session({
     saveUninitialized : true
 }));
 
+
+
+/*
+app.get('/',(req,res) => {
+    contador = 0
+    //console.log("index cargado");
+    //res.status(200);
+    //res.sendFile(__dirname + "/" + "styles.css");
+    res.render('index');
+    //podríamos enviar variables al html si hacemos res.render('index', {text: "World"}) y luego en el html Hello <%= text %>
+    //res.sendFile(path.join(__dirname,'/index.html'));
+});*/
+
+app.get('/creausuario',(req,res) => {
+    res.render('creausuario',{session: req.session});
+});
+
+app.post('/creausr', express.urlencoded({ extended: false }),async (req,res) =>{
+    var user_mail_address = req.body.user_email;
+    var user_password = req.body.user_password;
+    console.log("fueraaa",user_mail_address );
+    if(user_mail_address && user_password){
+
+        //const notes = await insertaUsuario(user_mail_address,user_password);
+        //console.log("contrasenia: ",notes[0].contrasenia);
+        const notes = await getUsuario(user_mail_address);
+
+        console.log(notes);
+        if(notes.length > 0){
+            console.log("Nombre de usuario ya usado");
+            res.redirect('/creausuario');
+            
+        }else{
+            const notes2 = await insertaUsuario(user_mail_address,user_password);
+            req.session.user_email = user_mail_address;
+            res.redirect('/creausuario');
+        }
+    }else{
+        res.send('introduce mail y contraseña');
+        res.end();
+    }
+
+});
+
+
+
 app.get('/seguridad',(req,res) => {
     res.render('seguridad',{session: req.session});
     /*req.session.usuario = "Antonio";
@@ -80,14 +126,14 @@ app.get('/seguridad',(req,res) => {
 });
 
 app.get('/seguridadresul',(req,res) => {
-    console.log(req.session);
+    //console.log(req.session);
     res.render('index', { session : req.session });
 });
 
 app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
     var user_mail_address = req.body.user_email;
     var user_password = req.body.user_password;
-    console.log("fueraaa",user_mail_address );
+    //console.log("fueraaa",user_mail_address );
     if(user_mail_address && user_password){
         //console.log("aaaa",user_mail_address);
         //res.redirect("/");
@@ -120,19 +166,6 @@ app.get('/logout',function(request,response,next){
     response.redirect("seguridad");
 })
 
-
-var contador = null
-
-app.get('/',(req,res) => {
-    contador = 0
-    //console.log("index cargado");
-    //res.status(200);
-    //res.sendFile(__dirname + "/" + "styles.css");
-    res.render('index');
-    //podríamos enviar variables al html si hacemos res.render('index', {text: "World"}) y luego en el html Hello <%= text %>
-    //res.sendFile(path.join(__dirname,'/index.html'));
-});
-
 app.get('/muestra', async (req,res) => {
     /*fs.readFile( 
         "./videoV2.mp4", 'base64', 
@@ -146,12 +179,9 @@ app.get('/muestra', async (req,res) => {
 
 });
 
+/*
 app.get('/muestra2', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
-    /*      <a href="/">Home</a>
-        ${images.map(i=>`<video width="320" height="240" controls> <source src="/videoV2.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video> `)}*/
     //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
 
     //        <h1>Hi User, Welcome ${session.user_email} </h1>
@@ -208,74 +238,40 @@ app.get('/muestra2', async (req,res) => {
     //    res.redirect('seguridad');
     //}
 
-});
+});*/
 
 app.get('/usuario/:nombre', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
-    /*      <a href="/">Home</a>
-        ${images.map(i=>`<video width="320" height="240" controls> <source src="/videoV2.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video> `)}*/
-    //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
-
-    //        <h1>Hi User, Welcome ${session.user_email} </h1>
-
 
     console.log("vidreos: " + images);
-    //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
-    //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
-    //console.log("resul: " + JSON.stringify(notes[0]["id"]));
+
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
         let notes = await getVidbyUrl(nomv); 
         if(notes.length > 0){
-            /*if( notes[0]["privado"] != 1 ){
-                console.log("resul: " + JSON.stringify(notes[0]));
-                newvidreos.push(nomv);
-            }*/
+
            if( notes[0]["autor"] == req.session.user_email ){
-                console.log("resul: " + JSON.stringify(notes[0]));
                 newvidreos.push(nomv);
             }
         }
     }
 
     if(req.session.user_email){
-        const HTML_ARCH = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <link href="/css/style.css" type="text/css" rel="stylesheet">
-            <!--esto resuelve la falta de favicon ico-->
-            <link rel="shortcut icon" href="#">
-        </head>
-        <body>
-            <h2>Animaciones</h2>
-            <div class="indice">
-                <a href="/">Inicio </a>
-                <a href="/seguridad">Perfil </a>
-                <a href="">Usuarios</a> 
-                <a href="/muestra2">Galería</a> 
-            </div>
+        let HTML_ARCH = `
+                ${newvidreos.map(i=>`
+                    <div id='contienevideo'>${i}          
+                    <video width="640" height="480" controls>
+                    <source src="/vids/${i}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                </div> `).join('') }
+            `
 
-
-
-            ${newvidreos.map(i=>`<video width="320" height="240" controls>            
-                <source src="/vids/${i}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video> `).join('') }
-
-        </body>
-        </html>
-        `
-        return res.send(HTML_ARCH);
+        res.render('galeria', {images:HTML_ARCH});
     }else{
         console.log("EEEEEEEEEEEEEEEE LOGEATE");
-        res.redirect('seguridad');
+        res.redirect('/seguridad');
     }
 
 });
@@ -284,7 +280,7 @@ app.get('/preview/:id/:nombre', async (req,res) => {
     //var name = 'anima2.mp4';
     let name = req.params.nombre + '.mp4';
     let id = Math.round(req.params.id);
-    console.log('dentro preview: ',name);
+    //console.log('dentro preview: ',name);
     res.render('preenviado', {name:name,idanim:id});
 
 });
@@ -304,13 +300,32 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
 
         if(privado!='ok'){
             console.log("no es privado");
-            //const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,false);
+            const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,false);
         }else{
             console.log("es privado");
-            //const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,true);
+            const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,true);
         }
     }else{
         //let nomog = nomvid.split('.')
+        const foldPath = './public/vids';
+        let nomvidsolo = nomvid.split('.')[0];
+        fs.readdir(foldPath, function(err, files) {
+
+        const txtFiles = files.filter(el => path.dirname(el) === nomvid);
+        console.log(txtFiles);
+            //for (let i = 0; i < txtFiles.length; i++) {
+                let filePath = foldPath + "/" + nomvid;
+                console.log("filepath: ",filePath);
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Error removing file: ${err}`);
+                        return;
+                    }
+
+                    console.log(`File ${filePath} has been successfully removed.`);
+                });
+            //}
+        });
         const vid = deleteIMGID(idvid);
         //console.log(vid);
     }
@@ -355,61 +370,15 @@ app.get('/bajavideo', async (req,res) => {
 
 });
 
+/*
 app.get('/video', async (req,res) => {
+    res.send("hola");
     //res.render('preview');
     const videoPath = './videoV2.mp4'; // Path to your video file
     const bitmap = fs.readFileSync(videoPath);
     const buf = new Buffer(bitmap);
-    let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
-    const vid = insertaVideo(id_rand,"prueba", videoPath);
-    //console.log("base de datos actualizada: " + buf);
-
-    //const file = fs.createReadStream(videoPath).pipe(res);
-    /*const readimagem = fs.readFileSync(videoPath);
-    const imagemBase64 = Buffer.from(readimagem).toString('base64');
-    console.log("archivo: " + JSON.stringify(imagemBase64));
-    let stringy = JSON.stringify(imagemBase64)*/
-    /*let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
-    let bitmap = fs.readFileSync(videoPath, {encoding: 'base64'});*/
-    /*let buf = new Buffer(bitmap);
-    var file = new Blob(
-        [buf],
-        {"type" : "video\/mp4"});
-    var bufferBase64 = new Buffer( file, 'binary' ).toString('base64');*/
-    //const vid = insertaVideo(id_rand,"prueba", bitmap);
-    //console.log("base de datos actualizada: " + vid);
-
-
-    /*const videoPath = './videoV2.mp4'; // Path to your video file
-    const stat = fs.statSync(videoPath);
-    const fileSize = stat.size;
-    const range = req.headers.range;
-
-    if (range) {
-        const parts = range.replace(/bytes=/, '').split('-');
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunkSize = end - start + 1;
-        const file = fs.createReadStream(videoPath, { start, end });
-        const head = {
-            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-            'Accept-Ranges': 'bytes',
-            'Content-Length': chunkSize,
-            'Content-Type': 'video/mp4',
-        };
-
-        res.writeHead(206, head);
-        file.pipe(res);
-    } else {
-        const head = {
-        'Content-Length': fileSize,
-        'Content-Type': 'video/mp4',
-        };
-
-        res.writeHead(200, head);
-        fs.createReadStream(videoPath).pipe(res);
-    }    */
-});
+    const file = fs.createReadStream(videoPath).pipe(res);
+});*/
 
 
 app.get('/notes', async (req,res) => {
@@ -551,6 +520,8 @@ app.get('/creavideo/:id/:nombre',async (req,res) => {
     //res.send(notes);
 
 });
+
+//export default app;
 
 
 app.listen(port, () => {
