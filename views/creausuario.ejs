@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap CSS -->
+        <link href="/css/style.css" rel="stylesheet">
+        <link rel="shortcut icon" href="#">
+        <title>Login System in Node.js Express</title>
+
+    </head>
+    <body class="seguridad">
+
+        <div class="container_seg">
+            <h1><b>Crea tu usuario en HopBlog</b></h1>
+
+            <div>
+                <div>&nbsp;</div>
+                <div>
+                <% if(session.user_email) { %>
+
+                    <h1>Hi User, Welcome <%= session.user_email %></h1>
+
+                    <a href="/usuario/<%= session.user_email %>">Perfil </a><br>
+
+
+                    <a href="/logout" class="btn btn-primary">Logout</a>
+
+                <% } else { %>
+
+                    <div class="card">
+                        <div class="card-header">Crea tu usuario</div>
+                        <div class="card-body">
+                            <form method="post" action="/creausr">
+                                <div >
+                                    <label>Nombre de usuario</label>
+                                    <input type="text" name="user_email" class="form-control" />
+                                </div>
+                                <div>
+                                    <label>Contraseña</label>
+                                    <input type="password" name="user_password" class="form-control" />
+                                </div>
+                                <div>
+                                    <input type="submit" class="btn btn-primary" value="Crear" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                <% } %>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
