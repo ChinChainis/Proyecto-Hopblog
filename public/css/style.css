@@ -154,6 +154,7 @@ body{
 #btn-video{
     background-image: url(./icons/claqueta.png);
     background-size: cover;
+    font-size: 0;
     width: 50px;
 }
 
@@ -163,6 +164,45 @@ video{
     border: #444444;
     border-style: solid;
     background-color: #feffdb;
+}
+
+#videostotales{
+    margin-left: 20%;
+}
+
+#contienevideo {
+    padding: 15px;
+}
+
+#contienevideo > *{
+    display: flex;
+    flex-direction: column;
+}
+
+/*
+#videostotales{
+    margin-left: 20%;
+    width: 640px;
+}
+
+#videostotales span{
+    width: 640px;
+}
+
+#contienevideo{
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}*/
+
+aside {
+  width: 12%;
+  padding: 15px;
+  /*padding-left: 15px;
+  margin-left: 15px;*/
+  float: left;
+  font-style: italic;
+  background-color: #feffdb;
 }
 
 /*seguridad*/
@@ -183,4 +223,64 @@ video{
     border-style: solid;
     width: 30%;
     padding: 15px;
+}
+
+#creausr{
+    text-decoration: none;
+    border: #444444;
+    border-style: solid;
+    border-radius: 3px;
+    padding: 5px;
+    position: absolute;
+    top: 10%;
+    left: 58%;
+    background-color: #feffdb;
+    color: #F77F00;
+    font-weight: 600;
+}
+#creausr:hover{
+    color:#F77F00;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+
+/*Portada*/
+
+#titulo_portada{
+    background-image: url(./icons/end.png);
+    background-size: cover;
+    width: 600px;
+    height: 300px;
+}
+
+#cuerpoportada{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    font-family: Helvetica;
+    text-align: justify;
+}
+
+#cuerpoportada p{
+    width: 40%;
+}
+
+#derechos{
+    position: absolute; 
+    bottom: 5px; 
+    text-align: center;
+}
+
+#indice-portada a{
+    font-family: helvetica;
+    font-size: 35px;
+    text-decoration: none;
+    margin: 50px;
+    color:#444444;
+}
+
+#indice-portada a:hover{
+    font-weight: 1000;
+
 }
