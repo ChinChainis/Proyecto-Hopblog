@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Galería</title>
+            <link href="/css/style.css" type="text/css" rel="stylesheet">
+            <!--esto resuelve la falta de favicon ico-->
+            <link rel="shortcut icon" href="#">
+        </head>
+        <body>
+            <h2>Animaciones</h2>
+            <div class="indice">
+                <a href="/">Inicio </a>
+                <a href="/seguridad">Perfil </a>
+                <a href="">Usuarios</a> 
+                <a href="/muestra3">Galería</a> 
+            </div>
+            <aside>
+                <!--<p>The Epcot center is a theme park at Walt Disney World Resort featuring exciting attractions, international pavilions, award-winning fireworks and seasonal special events.</p>-->
+                Escribe las etiquetas que quieras buscar, separadas por comas:
+                <form method="post" action="/muestrabusqueda">
+                    <input type="text-area" name="etiquetasbuscar" class="form-control" />
+                    <input type="submit" class="btn btn-primary" value="Busca" name="botonform" />
+                </form>
+                
+            </aside>
+
+            <div id="videostotales">
+                <%- images %>
+            </div>
+
+        </body>
+</html>
