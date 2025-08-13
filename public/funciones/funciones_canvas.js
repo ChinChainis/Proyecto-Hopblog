@@ -232,6 +232,8 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          .then( data => console.log(data) )
          .catch( error => console.error(error) );   
       };
+      frame_array = []
+      index_frame = 0;
       //poner tiempo de espera equivalente al número de frames?
       setTimeout(function(){
          fetch("http://localhost:3000/creavideo/"+id_rand+"/"+numnote);
