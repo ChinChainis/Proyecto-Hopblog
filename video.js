@@ -137,71 +137,6 @@ app.get('/logout',function(request,response,next){
     response.redirect("seguridad");
 })
 
-app.get('/muestra2', async (req,res) => {
-    const images = await fs.promises.readdir('public/vids')
-    /*      <a href="/">Home</a>
-        ${images.map(i=>`<video width="320" height="240" controls> <source src="/videoV2.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video> `)}*/
-    //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
-
-    //        <h1>Hi User, Welcome ${session.user_email} </h1>
-
-
-    //console.log("vidreos: " + images);
-    //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
-    //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
-    //console.log("resul: " + JSON.stringify(notes[0]["id"]));
-    let newvidreos = [];
-    for (let i = 0; i < images.length; i++) {
-        let nomv =images[i];
-        let notes = await getVidbyUrl(nomv); 
-        if(notes.length > 0){
-            //console.log("resul: " + JSON.stringify(notes[0]));
-            newvidreos.push(nomv);
-        }
-    }
-
-    //if(req.session.user_email){
-        const HTML_ARCH = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <link href="/css/style.css" type="text/css" rel="stylesheet">
-            <!--esto resuelve la falta de favicon ico-->
-            <link rel="shortcut icon" href="#">
-        </head>
-        <body>
-            <h2>Animaciones</h2>
-            <div class="indice">
-                <a href="/">Inicio </a>
-                <a href="/seguridad">Perfil </a>
-                <a href="">Usuarios</a> 
-                <a href="/muestra2">Galería</a> 
-            </div>
-            <aside>
-            <p>The Epcot center is a theme park at Walt Disney World Resort featuring exciting attractions, international pavilions, award-winning fireworks and seasonal special events.</p>
-            </aside>
-
-
-            ${images.map(i=>`<video width="320" height="240" controls>            
-                <source src="/vids/${i}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video> `).join('') }
-
-        </body>
-        </html>
-        `
-        return res.send(HTML_ARCH);
-    //}else{
-    //    console.log("EEEEEEEEEEEEEEEE LOGEATE");
-    //    res.redirect('seguridad');
-    //}
-
-});
 
 app.get('/muestra3', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
@@ -290,79 +225,6 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
 
 });
 
-app.get('/muestra', async (req,res) => {
-    /*fs.readFile( 
-        "./videoV2.mp4", 'base64', 
-        (err, base64Image) => { 
-            // 2. Create a data URL 
-            const dataUrl = `data:video/mp4;base64, ${base64Image}` 
-            return res.send('<video width="320" height="240" controls> <source src=${dataUrl} type="video/mp4"> Your browser does not support the video tag. </video>'); 
-        } 
-    ); */
-    res.render('preview');
-
-});
-
-/*
-app.get('/muestra2', async (req,res) => {
-    const images = await fs.promises.readdir('public/vids')
-    //ojo con href, si queremos usar estilo css quitamos el public/css, usamos directamente la carpeta  
-
-    //        <h1>Hi User, Welcome ${session.user_email} </h1>
-
-
-    console.log("vidreos: " + images);
-    //vidreos: video.mp4,video6ago.mp4,videoV2.mp4,videoV3.mp4
-    //let notes = await getVidbyUrl("./" + images[2]); //es el de pos 2
-    //console.log("resul: " + JSON.stringify(notes[0]["id"]));
-    let newvidreos = [];
-    for (let i = 0; i < images.length; i++) {
-        let nomv =images[i];
-        let notes = await getVidbyUrl(nomv); 
-        if(notes.length > 0){
-            console.log("resul: " + JSON.stringify(notes[0]));
-            newvidreos.push(nomv);
-        }
-    }
-
-    //if(req.session.user_email){
-        const HTML_ARCH = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <link href="/css/style.css" type="text/css" rel="stylesheet">
-            <!--esto resuelve la falta de favicon ico-->
-            <link rel="shortcut icon" href="#">
-        </head>
-        <body>
-            <h2>Animaciones</h2>
-            <div class="indice">
-                <a href="/">Inicio </a>
-                <a href="/seguridad">Perfil </a>
-                <a href="">Usuarios</a> 
-                <a href="/muestra2">Galería</a> 
-            </div>
-
-
-
-            ${images.map(i=>`<video width="320" height="240" controls>            
-                <source src="/vids/${i}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video> `).join('') }
-
-        </body>
-        </html>
-        `
-        return res.send(HTML_ARCH);
-    //}else{
-    //    console.log("EEEEEEEEEEEEEEEE LOGEATE");
-    //    res.redirect('seguridad');
-    //}
-
-});*/
 
 app.get('/usuario/:nombre', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
@@ -460,51 +322,6 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
 });
 
 
-
-app.get('/bajavideo', async (req,res) => {
-    const id = req.params.id
-    const notes = await getVidbyAutor("prueba");
-    console.log("base de datos: " + JSON.stringify(notes).split(':"').pop().slice('',-3));
-    let urltemp = JSON.stringify(notes).split(':"').pop().slice('',-3);
-
-    const head = {
-        'Content-Type': 'video/mp4',
-    };
-
-    /*res.writeHead(200, head);
-    fs.createReadStream(urltemp).pipe(res);*/
-    const bitmap = fs.readFileSync(urltemp);
-    const buf = new Buffer(bitmap);
-    fs.writeFile('./pruebaVod.mp4', buf,function(err) {
-        console.log(err);
-    });
-    //console.log("base de datos: " + Buffer.from(notes, 'binary').toString('base64'));
-
-    /*
-    const buf = new Buffer(notes);
-    //let vid = base64Image.split(';base64,').pop();
-    
-    //res.setHeader('Content-Length', myFile.length);
-    res.write(buf, 'binary');
-   
-    //var buf = notes.toString('base64');
-    /*fs.writeFile('./pruebaVod.mp4', buf,function(err) {
-        console.log(err);
-    });*/
-
-});
-
-/*
-app.get('/video', async (req,res) => {
-    res.send("hola");
-    //res.render('preview');
-    const videoPath = './videoV2.mp4'; // Path to your video file
-    const bitmap = fs.readFileSync(videoPath);
-    const buf = new Buffer(bitmap);
-    const file = fs.createReadStream(videoPath).pipe(res);
-});*/
-
-
 app.get('/notes', async (req,res) => {
     const foldPath = './borrar';
 
@@ -524,18 +341,7 @@ app.get('/notes', async (req,res) => {
             });
         }
     })
-    /*
-    fs.unlink(filePath, (err) => {
-    if (err) {
-        console.error(`Error removing file: ${err}`);
-        return;
-    }
 
-    console.log(`File ${filePath} has been successfully removed.`);
-    });*/
-    /*const notes = await getFrames()
-    console.log("base de datos: " + notes);
-    res.send(notes);*/
 });
 
 app.get('/notes/:id', async (req,res) => {
