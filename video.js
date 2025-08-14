@@ -9,7 +9,7 @@ import cors from 'cors';
 import multer from 'multer';
 import session from 'express-session';
 
-import {getImgIDbyId,insertarFrameID,getFramesbyId, deleteIMGID, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getImgIDbyId,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl, insertaVideoID} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -20,6 +20,9 @@ const app = express();
 
 
 const upload = multer({dest: 'frames/'})
+
+const origin = "";
+
 
 app.use(session({
     secret : '12345689',//clave cualquiera
@@ -143,26 +146,26 @@ app.get('/muestra3', async (req,res) => {
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
-        let notes = await getVidbyUrl(nomv); 
+        let notes = await getVidIDbyUrl(nomv); 
         if(notes.length > 0){
             let privado = notes[0]["privado"];
+            let nombrevid = notes[0]["urltitulo"];
             let autoractual = notes[0]["autor"];
             if(privado == 0){
-                newvidreos.push(nomv);
+                newvidreos.push([nomv,nombrevid]);
             }
             if(privado == 1 && req.session.user_email == autoractual){
-                newvidreos.push(nomv);
+                newvidreos.push([nomv,nombrevid]);
             }
-            //console.log("resul: " + JSON.stringify(notes[0]));
         }
     }
-                //<div id='contienevideo'>${i} 
+
     let HTML_ARCH = `
             ${newvidreos.map(i=>`
                 <div id='contienevideo'> 
-                    <h3>${i}</h3>
+                    <h3>${ i[1] }</h3>
                     <video width="640" height="480" controls>
-                    <source src="/vids/${i}" type="video/mp4">
+                    <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
                     </video>
                 </div> `).join('') }
@@ -175,30 +178,30 @@ app.get('/muestra3', async (req,res) => {
 app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,res) => {
     let etiquetas = req.body.etiquetasbuscar.split(',');
     const images = await fs.promises.readdir('public/vids')
-    let newvidreos = [];
     let videosfiltrados = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
-        let notes = await getVidbyUrl(nomv); 
+        let notes = await getVidIDbyUrl(nomv); 
+        console.log("resul: " + nomv + ' ' + JSON.stringify(notes[0]));
+
         if(notes.length > 0){
             let privado = notes[0]["privado"];
             let autoractual = notes[0]["autor"];
-
-            //console.log("resul: " + JSON.stringify(notes[0]));
+            let nombrevid = notes[0]["urltitulo"];
             let etiqetasvideo = JSON.stringify(notes[0]["etiquetas"]);
             for (let i = 0; i < etiquetas.length; i++) {
                 if(etiqetasvideo.search(etiquetas[i]) != -1){
                     if(privado == 0){
-                        videosfiltrados.push(nomv);
+                        videosfiltrados.push([nomv,nombrevid]);
                     }
                     if(privado == 1 && req.session.user_email == autoractual){
-                        videosfiltrados.push(nomv);
+                        videosfiltrados.push([nomv,nombrevid]);
                     }
                 }
 
                 if( autoractual == etiquetas[i] ){
                     if(privado == 0){
-                        videosfiltrados.push(nomv);
+                        videosfiltrados.push([nomv,nombrevid]);
                     }
                 }
             };
@@ -207,15 +210,17 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             //newvidreos.push(nomv);
         }
     }
+    console.log(videosfiltrados);
+
 
     let videosfiltrados2 = videosfiltrados.filter((item, index) => videosfiltrados.indexOf(item) === index);
 
 
     let HTML_ARCH = `
             ${videosfiltrados2.map(i=>`
-                <span id='contienevideo'> ${i}
+                <span id='contienevideo'> ${i[1]}
                 <video width="640" height="480" controls>
-                <source src="/vids/${i}" type="video/mp4">
+                <source src="/vids/${i[0]}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             </span> `).join('') }
@@ -234,11 +239,11 @@ app.get('/usuario/:nombre', async (req,res) => {
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
-        let notes = await getVidbyUrl(nomv); 
+        let notes = await getVidIDbyUrl(nomv); 
         if(notes.length > 0){
-
+            let nombrevid = notes[0]["urltitulo"];
            if( notes[0]["autor"] == req.session.user_email ){
-                newvidreos.push(nomv);
+                newvidreos.push([nomv,nombrevid]);
             }
         }
     }
@@ -246,9 +251,9 @@ app.get('/usuario/:nombre', async (req,res) => {
     if(req.session.user_email){
         let HTML_ARCH = `
                 ${newvidreos.map(i=>`
-                    <div id='contienevideo'>${i}          
+                    <div id='contienevideo'>${i[1]}          
                     <video width="640" height="480" controls>
-                    <source src="/vids/${i}" type="video/mp4">
+                    <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 </div> `).join('') }
@@ -259,7 +264,6 @@ app.get('/usuario/:nombre', async (req,res) => {
         console.log("EEEEEEEEEEEEEEEE LOGEATE");
         res.redirect('/seguridad');
     }
-
 });
 
 app.get('/preview/:id/:nombre', async (req,res) => {
@@ -285,11 +289,11 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
         let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
 
         if(privado!='ok'){
-            console.log("no es privado");
-            const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,false);
+            console.log("no es privado"); 
+            const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,false);
         }else{
             console.log("es privado");
-            const vid = insertaVideo3(idvid,'Antonio', nomvid,etiquetas,true);
+            const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,true);
         }
     }else{
         //let nomog = nomvid.split('.')
@@ -300,7 +304,7 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
         const txtFiles = files.filter(el => path.dirname(el) === nomvid);
         console.log(txtFiles);
             //for (let i = 0; i < txtFiles.length; i++) {
-                let filePath = foldPath + "/" + nomvid;
+                let filePath = foldPath + "/" + idvid +'.mp4';
                 console.log("filepath: ",filePath);
                 fs.unlink(filePath, (err) => {
                     if (err) {
@@ -351,104 +355,6 @@ app.get('/notes/:id', async (req,res) => {
     console.log("uaaaaa" + id);
     console.log("base de datos: " + notes);
     res.send(notes);
-});
-
-
-
-app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', origin);
-
-    const nom = req.params.nombre;
-    const id_ani = req.params.id;
-
-    console.log("dentro creavideo:" + id_ani);
-
-    console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
-    var inBase64Format  = JSON.stringify(req.body )
-
-    console.log("dentro server parte principio " + inBase64Format.slice(1,2)); 
-    let numframe = inBase64Format.slice(1,2);
-
-    let base64Image = inBase64Format.split(';base64,').pop();   
-    
-    //let r = Math.floor((Math.random())*1000)+100;
-    let id_rand = Math.random() * (10000 - 1000) + 1000;
-
-    var buff = Buffer.from(base64Image).toString("base64");
-
-    const frame = insertarFrameID(id_rand,id_ani,nom, inBase64Format);
-    console.log("base de datos actualizada: " + frame);
-
-});
-
-
-
-app.get('/creavideo/:id/:nombre',async (req,res) => {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-
-    const foldPath = './frames2';
-
-    fs.readdir(foldPath, function(err, files) {
-    const txtFiles = files.filter(el => path.extname(el) === '.png');
-    console.log(txtFiles);
-        for (let i = 0; i < txtFiles.length; i++) {
-            let filePath = foldPath + "/" + txtFiles[i];
-            console.log(filePath);
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    console.error(`Error removing file: ${err}`);
-                    return;
-                }
-
-                console.log(`File ${filePath} has been successfully removed.`);
-            });
-        }
-    });
-
-
-
-    let id_ani_prev = req.params.id;
-    const id_ani = Math.round(id_ani_prev);
-
-    const nom = req.params.nombre;
-
-    console.log("dentro creavideo:" + id_ani);
-
-    const notes = await getImgIDbyId(id_ani);
-    console.log("base de datos: " + notes.length);
-    for (let i = 0; i < notes.length; i++) {
-        let numtemp = JSON.stringify(notes[i]).split(',');
-        let numframe = numtemp[0].slice(11,);
-
-        let base64Image = JSON.stringify(notes[i]).split(';base64,').pop();
-        console.log("BUFF: " + numframe);
-        fs.writeFile('./frames2/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
-            console.log('File created');
-        });
-    }
-
-    ffmpeg()
-
-        .input('frames2/frame%01d.png')
-        .inputOptions('-framerate', '10')
-        .videoCodec('libx264')
-        .saveToFile('public/vids/'+nom+'.mp4')
-        .on('progress', (progress) => {
-            if (progress.percent) {
-            console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-            }
-        })
-        .on('end', () => {
-            console.log('FFmpeg con nombre has finished.');
-            //res.redirect('/preview');            
-        })
-        .on('error', (error) => {
-            console.error(error);
-        });
-    //res.render('preenviado');
-    //res.send(notes);
-
 });
 
 
