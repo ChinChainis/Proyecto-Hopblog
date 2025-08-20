@@ -22,6 +22,9 @@ const app = express();
 const upload = multer({dest: 'frames/'})
 
 const origin = "";
+app.set('view engine','ejs');
+app.use( express.json() ); // <== Make sure we can handle JSON data from the client
+
 
 
 app.use(session({
@@ -38,7 +41,8 @@ app.get('/test',(req,res) =>{
 })
 
 app.get('/',(req,res) => {
-    res.render('portada');
+    res.status(200).render('portada');
+
 });
 
 app.get('/canvas',(req,res) => {
@@ -104,9 +108,13 @@ app.get('/seguridadresul',(req,res) => {
     res.render('index', { session : req.session });
 });
 
-app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
-    var user_mail_address = req.body.user_email;
-    var user_password = req.body.user_password;
+app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
+    const {user_email,user_password } = req.body;
+    var fallolog = 0;
+    //console.log(req.body);
+    //console.log(user_email,user_password);
+    var user_mail_address = user_email;
+    //var passwd = user_password;
     //console.log("fueraaa",user_mail_address );
     if(user_mail_address && user_password){
         //console.log("aaaa",user_mail_address);
@@ -114,23 +122,27 @@ app.post('/login', express.urlencoded({ extended: false }),async (req,res) =>{
         const notes = await getUsuario(user_mail_address);
         //console.log("contrasenia: ",notes[0].contrasenia);
 
-        console.log(notes);
+        //console.log(notes);
         if(notes.length > 0){
             if( user_password == notes[0].contrasenia ){
                 req.session.user_email = notes[0].nick ;
-                res.redirect('seguridad');
+                
+                res.redirect(302,'/seguridad');
+                //res.write('todo correcto');
             }else{
-                console.log("contraseña incorrecta");
-                res.redirect('seguridad');
+                res.status(401);
+                res.render('seguridad',{session:''});
             }
             
         }else{
-            console.log("usuario incorrecto");
+            //res.send('usuario incorrecto');
             res.redirect('seguridad');
+            
         }
     }else{
-        res.send('introduce mail y contraseña');
-        res.end();
+        res.status(401);
+        res.render('seguridad',{session:''});
+
     }
 
 });
@@ -171,18 +183,19 @@ app.get('/muestra3', async (req,res) => {
                 </div> `).join('') }
         `
 
-    res.render('galeria', {images:HTML_ARCH});
+    res.render('galeria',{session: req.session,images:HTML_ARCH});
 
 });
 
 app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,res) => {
-    let etiquetas = req.body.etiquetasbuscar.split(',');
+    var etq = req.body.etiquetasbuscar;
+    var etiquetas = etq.split(',');
     const images = await fs.promises.readdir('public/vids')
     let videosfiltrados = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
         let notes = await getVidIDbyUrl(nomv); 
-        console.log("resul: " + nomv + ' ' + JSON.stringify(notes[0]));
+        //console.log("resul: " + nomv + ' ' + JSON.stringify(notes[0]));
 
         if(notes.length > 0){
             let privado = notes[0]["privado"];
@@ -210,7 +223,7 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             //newvidreos.push(nomv);
         }
     }
-    console.log(videosfiltrados);
+    //console.log(videosfiltrados);
 
 
     let videosfiltrados2 = videosfiltrados.filter((item, index) => videosfiltrados.indexOf(item) === index);
@@ -226,7 +239,7 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             </span> `).join('') }
         `
 
-    res.render('galeria', {images:HTML_ARCH});
+    res.render('galeria', {session: req.session,images:HTML_ARCH});
 
 });
 
@@ -259,7 +272,7 @@ app.get('/usuario/:nombre', async (req,res) => {
                 </div> `).join('') }
             `
 
-        res.render('galeria', {images:HTML_ARCH});
+        res.render('galeria', {session: req.session,images:HTML_ARCH});
     }else{
         console.log("EEEEEEEEEEEEEEEE LOGEATE");
         res.redirect('/seguridad');
@@ -271,7 +284,7 @@ app.get('/preview/:id/:nombre', async (req,res) => {
     let name = req.params.nombre + '.mp4';
     let id = Math.round(req.params.id);
     //console.log('dentro preview: ',name);
-    res.render('preenviado', {name:name,idanim:id});
+    res.render('preenviado', {name:name,idanim:id,session: req.session});
 
 });
 
@@ -282,6 +295,7 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
     let listaetiq = etiquetas.split(',');
     let nomvid = req.body.vidname;
     let idvid = req.body.vidid;
+    let autorvid = req.body.usuario;
     console.log("nombre: ", nomvid);
     console.log("uploadd: ",etiquetas, " privado: ", privado);
     console.log("boton: ",req.body.botonform);
@@ -290,10 +304,12 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
 
         if(privado!='ok'){
             console.log("no es privado"); 
-            const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,false);
+            //const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,false);
+            const vid = insertaVideoID(idvid,autorvid, nomvid,etiquetas,false);
         }else{
             console.log("es privado");
-            const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,true);
+            //const vid = insertaVideoID(idvid,'Antonio', nomvid,etiquetas,true);
+            const vid = insertaVideoID(idvid,req.session.user_email, nomvid,etiquetas,true);
         }
     }else{
         //let nomog = nomvid.split('.')
