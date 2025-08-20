@@ -15,6 +15,9 @@
                 <a href="/seguridad">Perfil </a>
                 <a href="">Usuarios</a> 
                 <a href="/muestra3">Galería</a> 
+                <% if(session.user_email) { %>
+                    <a href="/canvas">Animar</a> 
+                <% } %>
             </div>
             <aside>
                 <!--<p>The Epcot center is a theme park at Walt Disney World Resort featuring exciting attractions, international pavilions, award-winning fireworks and seasonal special events.</p>-->
@@ -25,6 +28,13 @@
                 </form>
                 
             </aside>
+        
+            <% if(session.user_email) { %>
+                <div id="usuarioactual">
+                    Usuario: <%- session.user_email %>
+                </div>
+            <% } %>
+
 
             <div id="videostotales">
                 <%- images %>
