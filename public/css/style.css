@@ -181,21 +181,22 @@ video{
     flex-direction: column;
 }
 
-/*
-#videostotales{
-    margin-left: 20%;
-    width: 640px;
-}
-
-#videostotales span{
-    width: 640px;
-}
-
-#contienevideo{
-    display: flex;
-    flex-direction: column;
+#usuarioactual{
+    float: right;
+    width: 200px;
     padding: 15px;
-}*/
+    margin-right: 50px;
+    margin-top: 15px;
+    background-color: #E66E00;
+    border-radius: 9999px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    mask-image: linear-gradient( to right, #000 50%, transparent 90%);
+    font-family: Helvetica;
+    font-weight: 1200px;
+    color: #888888;
+    text-shadow: -1px 0 #222222, 0 1px #222222, 1px 0 #222222, 0 -1px #222222;
+}
 
 aside {
   width: 12%;
