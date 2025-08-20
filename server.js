@@ -72,9 +72,9 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
     const nom = req.params.nombre;
     const id_ani = req.params.id;
 
-    console.log("dentro creavideo:" + id_ani);
+    //console.log("dentro creavideo:" + id_ani);
 
-    console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
+    //console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
     var inBase64Format  = JSON.stringify(req.body )
 
     console.log("dentro server parte principio " + inBase64Format.slice(1,2)); 
@@ -83,20 +83,20 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
     let base64Image = inBase64Format.split(';base64,').pop();   
     
     //let r = Math.floor((Math.random())*1000)+100;
-    let id_rand = Math.random() * (10000 - 1000) + 1000;
+    let id_rand = Math.random() * (1000000 - 100000) + 100000;
 
     var buff = Buffer.from(base64Image).toString("base64");
 
     const frame = insertarFrameID(id_rand,id_ani,nom, inBase64Format);
-    console.log("base de datos actualizada: " + frame);
-
+    //console.log("base de datos actualizada: " + frame);
+    res.end;
 });
 
 
 
 app.get('/creavideo/:id/:nombre',async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
-
+    console.log('eeoooo');
     const foldPath = './frames2';
 
     fs.readdir(foldPath, function(err, files) {
@@ -151,7 +151,7 @@ app.get('/creavideo/:id/:nombre',async (req,res) => {
         })
         .on('end', () => {
             console.log('FFmpeg con nombre has finished.');
-            //res.redirect('/preview');            
+            //res.redirect('/preview/',id_ani,'/',nom);            
         })
         .on('error', (error) => {
             console.error(error);
