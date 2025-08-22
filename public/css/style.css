@@ -81,6 +81,11 @@ body{
     margin: 2px;
 }
 
+#goma{
+    background-image: url(./icons/goma.png);
+    background-size: cover;
+}
+
 .color-picker{
     width: 100px;
     height: 50px;
