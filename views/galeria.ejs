@@ -15,6 +15,9 @@
                 <a href="/seguridad">Perfil </a>
                 <a href="">Usuarios</a> 
                 <a href="/muestra3">Galería</a> 
+                <% if(rolactual=='administrador') { %>
+                    <a href="/totalAdmin">Galeria completa</a> 
+                <% } %>
                 <% if(session.user_email) { %>
                     <a href="/canvas">Animar</a> 
                 <% } %>
@@ -32,7 +35,11 @@
             <% if(session.user_email) { %>
                 <div id="usuarioactual">
                     Usuario: <%- session.user_email %>
+                    <% if(rolactual=='administrador') { %>
+                        <span id="rolactual">Administrador</span>
+                    <% } %>
                 </div>
+
             <% } %>
 
 
