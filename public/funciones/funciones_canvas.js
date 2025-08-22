@@ -37,6 +37,10 @@ function change_color(element){
    draw_color = element.style.background;
 }
 
+function borra_color(element){
+   draw_color = "white";
+}
+
 
 canvas.addEventListener("touchstart",start, false);
 canvas.addEventListener("touchmove",draw, false);
