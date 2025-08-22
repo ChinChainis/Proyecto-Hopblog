@@ -9,7 +9,7 @@ import cors from 'cors';
 import multer from 'multer';
 import session from 'express-session';
 
-import {getImgIDbyId,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, insertaVideo, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl, insertaVideoID} from './funciones_sql.js';
+import {getImgIDbyId,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, deleteVidIDbyUrl, insertaVideoID} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -154,7 +154,7 @@ app.get('/logout',function(request,response,next){
 
 
 app.get('/muestra3', async (req,res) => {
-    const images = await fs.promises.readdir('public/vids')
+    const images = await fs.promises.readdir('public/vids');
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
@@ -172,6 +172,15 @@ app.get('/muestra3', async (req,res) => {
         }
     }
 
+    let rolusr = '';
+
+    if(req.session.user_email){
+        console.log('aaa: ',req.session.user_email);
+        const aut = await getUsuario(req.session.user_email);
+        rolusr = aut[0]["rol"];
+        console.log(rolusr);
+    }
+
     let HTML_ARCH = `
             ${newvidreos.map(i=>`
                 <div id='contienevideo'> 
@@ -183,9 +192,77 @@ app.get('/muestra3', async (req,res) => {
                 </div> `).join('') }
         `
 
-    res.render('galeria',{session: req.session,images:HTML_ARCH});
+    res.render('galeria',{session: req.session,images:HTML_ARCH,rolactual:rolusr});
 
 });
+
+app.get('/totalAdmin', async (req,res) => {
+    const images = await fs.promises.readdir('public/vids')
+    let newvidreos = [];
+    for (let i = 0; i < images.length; i++) {
+        let nomv =images[i];
+        let notes = await getVidIDbyUrl(nomv); 
+        if(notes.length > 0){
+            let privado = notes[0]["privado"];
+            let nombrevid = notes[0]["urltitulo"];
+            let autoractual = notes[0]["autor"];
+            newvidreos.push([nomv,nombrevid]);
+
+        }
+    }
+
+    let HTML_ARCH = `
+            ${newvidreos.map(i=>`
+                <div id='contienevideo'> 
+                    <h3>${ i[1] }</h3>
+                    <div id="contenedorvideo">
+                        <video width="640" height="480" controls>
+                        <source src="/vids/${i[0]}" type="video/mp4">
+                        Your browser does not support the video tag.
+                        </video>
+                        <form method="post" action="/borravid">
+                            <input type="hidden" id="idvideoborrar" name="idvideoborrar" value=${i[0]}>
+                            <input type="submit" class="btn btn-primary" id="borraboton" value="" name="botonborrar" />
+                        </form>
+                    </div>
+                </div> `).join('') }
+        `
+
+    res.render('galeria',{session: req.session,images:HTML_ARCH,rolactual:'administrador'});
+
+});
+
+app.post('/borravid', express.urlencoded({ extended: false }),async (req,res) => {
+    console.log(req.body.idvideoborrar);
+    //93786 | Antonio | caradiente.mp4  | cara,susto,dientes |       0 
+    let nomvid = req.body.idvideoborrar.split('.');
+    const vidaborrar = await getVidIDbyUrl(nomvid[0]);
+    console.log("totaladmin : ",vidaborrar[0]["urltitulo"]);
+    const ordenborra = await deleteVidIDbyUrl(nomvid[0]);
+    res.redirect('/totalAdmin');
+
+            //let nomog = nomvid.split('.')
+    const foldPath = './public/vids';
+    fs.readdir(foldPath, function(err, files) {
+
+        const txtFiles = files.filter(el => path.dirname(el) === nomvid);
+        console.log(txtFiles);
+            //for (let i = 0; i < txtFiles.length; i++) {
+        let filePath = foldPath + "/" + nomvid[0] + ".mp4";
+        console.log("filepath: ",filePath);
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Error removing file: ${err}`);
+                return;
+            }
+
+            console.log(`File ${filePath} has been successfully removed.`);
+        });
+            //}
+    });
+    const vid = deleteIMGID(nomvid[0]);
+});
+
 
 app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,res) => {
     var etq = req.body.etiquetasbuscar;
@@ -239,7 +316,7 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             </span> `).join('') }
         `
 
-    res.render('galeria', {session: req.session,images:HTML_ARCH});
+    res.render('galeria', {session: req.session,images:HTML_ARCH,rolactual:''});
 
 });
 
@@ -262,6 +339,15 @@ app.get('/usuario/:nombre', async (req,res) => {
     }
 
     if(req.session.user_email){
+        let rolusr = '';
+        const aut = await getUsuario(req.session.user_email);
+        if(aut[0]["rol"] == "administrador"){
+            console.log('aaa: ',req.session.user_email);
+            rolusr = aut[0]["rol"];
+            console.log(rolusr);
+        }
+
+
         let HTML_ARCH = `
                 ${newvidreos.map(i=>`
                     <div id='contienevideo'>${i[1]}          
@@ -272,7 +358,7 @@ app.get('/usuario/:nombre', async (req,res) => {
                 </div> `).join('') }
             `
 
-        res.render('galeria', {session: req.session,images:HTML_ARCH});
+        res.render('galeria', {session: req.session,images:HTML_ARCH,rolactual:rolusr});
     }else{
         console.log("EEEEEEEEEEEEEEEE LOGEATE");
         res.redirect('/seguridad');
