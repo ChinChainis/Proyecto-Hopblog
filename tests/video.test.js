@@ -143,7 +143,7 @@ describe('POST /muestrabusqueda', () => {
 
 describe('POST /upload', () => {
     describe("Con id, nombre, etiquetas, no privado", ()=>{
-        test("debería responde con status code 200", async () =>{
+        test("Añade video con status code 302", async () =>{
             const response = await request(app).post("/upload").send({
                 botonform : 'Subir!',
                 usuario : 'Antonio',
@@ -155,6 +155,17 @@ describe('POST /upload', () => {
             console.log(response);
             expect(response.statusCode).toBe(302);
         })
-
+        test("Borra video con status code 302", async () =>{
+            const response = await request(app).post("/upload").send({
+                botonform : 'Borrar',
+                usuario : 'Antonio',
+                vidid : 333,
+                vidname : 'video.pm4',
+                etiquetas : 'cara,ojo',
+                privadocheck : 0
+            })
+            console.log(response);
+            expect(response.statusCode).toBe(302);
+        })
     })
 });
