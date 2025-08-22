@@ -419,7 +419,7 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
             //}
         });
         const vid = deleteIMGID(idvid);
-        //console.log(vid);
+        const ordenborra = await deleteVidIDbyUrl(idvid);
     }
 
 
