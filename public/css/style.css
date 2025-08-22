@@ -194,8 +194,13 @@ video{
     mask-image: linear-gradient( to right, #000 50%, transparent 90%);
     font-family: Helvetica;
     font-weight: 1200px;
-    color: #888888;
+    color: #DDDDDD;
     text-shadow: -1px 0 #222222, 0 1px #222222, 1px 0 #222222, 0 -1px #222222;
+}
+
+#rolactual{
+    color: #fde74c;
+    font-weight: bolder;
 }
 
 aside {
@@ -206,6 +211,18 @@ aside {
   float: left;
   font-style: italic;
   background-color: #feffdb;
+}
+
+#borraboton{
+    width: 60px;
+    height: 60px;
+    background-image: url(./icons/poof.png);
+    background-size: cover;
+}
+
+#contienevideo > *{
+    display: flex;
+    flex-direction: row;
 }
 
 /*seguridad*/
