@@ -9,7 +9,7 @@ import cors from 'cors';
 import multer from 'multer';
 import session from 'express-session';
 
-import {getImgIDbyId,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, deleteVidIDbyUrl, insertaVideoID} from './funciones_sql.js';
+import {insertaUsuario,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, deleteVidIDbyUrl, insertaVideoID} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
@@ -28,8 +28,8 @@ app.use( express.json() ); // <== Make sure we can handle JSON data from the cli
 
 
 app.use(session({
-    secret : '12345689',//clave cualquiera
-    resave : true,
+    secret : '12345689',
+    resave : false,
     saveUninitialized : true
 }));
 
@@ -60,7 +60,7 @@ app.get('/canvas',(req,res) => {
 
 
 app.get('/creausuario',(req,res) => {
-    res.render('creausuario',{session: req.session});
+    res.render('creausuario',{session: req.session,usurrepe : 0});
 });
 
 app.post('/creausr', express.urlencoded({ extended: false }),async (req,res) =>{
@@ -76,7 +76,7 @@ app.post('/creausr', express.urlencoded({ extended: false }),async (req,res) =>{
         console.log(notes);
         if(notes.length > 0){
             console.log("Nombre de usuario ya usado");
-            res.redirect('/creausuario');
+            res.render('creausuario',{session: '',usurrepe : 1});
             
         }else{
             const notes2 = await insertaUsuario(user_mail_address,user_password);
@@ -136,8 +136,8 @@ app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
             
         }else{
             //res.send('usuario incorrecto');
-            res.redirect('seguridad');
-            
+                res.status(401);
+                res.render('seguridad',{session:'ERROR'});            
         }
     }else{
         res.status(401);
@@ -149,7 +149,7 @@ app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
 
 app.get('/logout',function(request,response,next){
     request.session.destroy();
-    response.redirect("seguridad");
+    response.redirect("/seguridad");
 })
 
 
@@ -233,11 +233,11 @@ app.get('/totalAdmin', async (req,res) => {
 });
 
 app.post('/borravid', express.urlencoded({ extended: false }),async (req,res) => {
-    console.log(req.body.idvideoborrar);
+    //console.log(req.body.idvideoborrar);
     //93786 | Antonio | caradiente.mp4  | cara,susto,dientes |       0 
     let nomvid = req.body.idvideoborrar.split('.');
     const vidaborrar = await getVidIDbyUrl(nomvid[0]);
-    console.log("totaladmin : ",vidaborrar[0]["urltitulo"]);
+    //console.log("totaladmin : ",vidaborrar[0]["urltitulo"]);
     const ordenborra = await deleteVidIDbyUrl(nomvid[0]);
     res.redirect('/totalAdmin');
 
@@ -323,8 +323,11 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
 
 app.get('/usuario/:nombre', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
+    let name = req.params.nombre;
 
-    console.log("vidreos: " + images);
+    //console.log("vidreos: " + name + " -> " + req.session.user_email);
+    const aut = await getUsuario(name);
+
 
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
@@ -332,19 +335,27 @@ app.get('/usuario/:nombre', async (req,res) => {
         let notes = await getVidIDbyUrl(nomv); 
         if(notes.length > 0){
             let nombrevid = notes[0]["urltitulo"];
-           if( notes[0]["autor"] == req.session.user_email ){
+           if( notes[0]["autor"] == name && notes[0]["privado"] == 0){
+                newvidreos.push([nomv,nombrevid]);
+            }
+            else if( name == req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name){
+                //console.log(nombrevid);
+                newvidreos.push([nomv,nombrevid]);
+            }else if( name != req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name && aut[0]["rol"] == "administrador"){
+                //console.log(nombrevid);
                 newvidreos.push([nomv,nombrevid]);
             }
         }
     }
 
-    if(req.session.user_email){
+
+    if(aut.length > 0){
         let rolusr = '';
-        const aut = await getUsuario(req.session.user_email);
+
         if(aut[0]["rol"] == "administrador"){
-            console.log('aaa: ',req.session.user_email);
+            //console.log('aaa: ',req.session.user_email);
             rolusr = aut[0]["rol"];
-            console.log(rolusr);
+            //console.log(rolusr);
         }
 
 
@@ -427,37 +438,6 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
     res.redirect('/'); //tmp
 });
 
-
-app.get('/notes', async (req,res) => {
-    const foldPath = './borrar';
-
-    fs.readdir(foldPath, function(err, files) {
-    const txtFiles = files.filter(el => path.extname(el) === '.png');
-    console.log(txtFiles);
-        for (let i = 0; i < txtFiles.length; i++) {
-            let filePath = foldPath + "/" + txtFiles[i];
-            console.log(filePath);
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    console.error(`Error removing file: ${err}`);
-                    return;
-                }
-
-                console.log(`File ${filePath} has been successfully removed.`);
-            });
-        }
-    })
-
-});
-
-app.get('/notes/:id', async (req,res) => {
-    //ej http://127.0.0.1:3000/notes/id:2
-    const id = req.params.id
-    const notes = await getFramesbyId(id)
-    console.log("uaaaaa" + id);
-    console.log("base de datos: " + notes);
-    res.send(notes);
-});
 
 
 export default app;
