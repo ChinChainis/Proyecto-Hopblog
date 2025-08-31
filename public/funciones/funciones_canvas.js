@@ -1,3 +1,6 @@
+const controller = new AbortController();
+const signal = controller.signal
+
 
 const canvas = document.getElementById("canvas");
 
@@ -76,7 +79,12 @@ function draw(event){
       context.lineTo(event.clientX - canvas.offsetLeft, 
                      event.clientY - canvas.offsetTop);
       context.strokeStyle = draw_color;
-      context.lineWidth = draw_width;
+      if(draw_width == 3){
+         context.lineWidth = draw_width*2;
+      }else{
+         context.lineWidth = draw_width;
+      }
+      
       context.lineCap = "round";
       context.lineJoin = "round";
       context.stroke();
@@ -200,18 +208,43 @@ function envioframes(id_rand,numnote){
       idvid = id_rand;
       nombvid = numnote;
 
+      //let listaframesstrings = [];
+
       const apiCall = (posact) => fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
             method: "POST",
+            signal: signal,
             headers: {
             'Content-Type': 'application/json'
             },
+            /*body: JSON.stringify({
+               listf : content,
+            })*/
             body: "[" + JSON.stringify(posact+1) + "," + JSON.stringify(datosimg) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
          })
          .then( res => res.json() ) 
          .then( data => console.log(data) )
          .catch( error => console.error(error) );   
+/*
+      for (let i = 0; i < num_frames; i++) {
 
+         var tamtotal = frame_array[i].length - 1;
+         context.putImageData(frame_array[i][tamtotal], 0,0);  
+         var canvas = document.querySelector('canvas');
+         var datosimg =  canvas.toDataURL("image/base64", 1.0);
+         console.log('frame numeroo: ', i+1);
 
+         listaframesstrings.push("[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]");
+
+         if(i%2==0 && i!=num_frames-1 && i!=0){
+            console.log("batch completado")
+            apiCall(listaframesstrings);
+            listaframesstrings = [];
+            listaframesstrings.push("[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]");
+         }         
+
+      }
+      apiCall(listaframesstrings);*/
+      
       for (let i = 0; i < num_frames; i++) {
 
          var tamtotal = frame_array[i].length - 1;
@@ -224,10 +257,12 @@ function envioframes(id_rand,numnote){
 
          apiCall(i);
       }
+
 }
 
 function renderizavid(id_rand,numnote){
-   fetch("http://127.0.0.1:3000/creavideo/"+id_rand+"/"+numnote);
+   //fetch("http://127.0.0.1:3000/creavideo/"+id_rand+"/"+numnote);
+   window.location.href = "http://127.0.0.1:3000/creavideo/"+id_rand+"/"+numnote;
 }
 
 function renderizaprev(id_rand,numnote){
@@ -268,25 +303,24 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
 
       let tiempotot = num_frames * 2500;
 
-      //const myPromise = new Promise((resolve) => {
+      const myPromise = new Promise((resolve) => {
          //setTimeout(envioframes(id_rand,numnote),tiempotot);
          //setTimeout(() => {
             // Other things to do before completion of the promise
-            //envioframes(id_rand,numnote);
+            envioframes(id_rand,numnote);
             // The fulfillment value of the promise
             //resolve(renderizavid(id_rand,numnote));
          //   resolve(envioframes(id_rand,numnote));
          //}, tiempotot);
-      //});
-      //myPromise
-      //.then(setTimeout(() => { renderizavid(id_rand,numnote)}, tiempotot))
-      /*.then(setTimeout(() => { renderizaprev(id_rand,numnote)}, tiempotot*4))*/;
+      });
+      myPromise
+      .then(setTimeout(() => { renderizavid(id_rand,numnote)}, tiempotot))
+      .then(setTimeout(() => { renderizaprev(id_rand,numnote)}, tiempotot+2000));
       //myPromise.then(renderizavid(id_rand,numnote)).catch( error => console.error(error) );
       //myPromise.then(renderizavid(id_rand,numnote)).catch( error => console.error(error) ); 
       //envioframes(id_rand,numnote).then(() => { return renderizavid(id_rand,numnote) }).then((result) => { console.log(result)});
-
-         ;
-      idvid = id_rand;
+      
+      /*idvid = id_rand;
       nombvid = numnote;
 
       const apiCall = (posact) => fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
@@ -312,7 +346,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          var datosimg =  canvas.toDataURL("image/base64", 1.0);
          //pics.push(datosimg);
          console.log('frame numeroo: ', i+1);
-         /*fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
+         fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
             method: "POST",
             headers: {
             'Content-Type': 'application/json'
@@ -321,7 +355,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          })
          .then( res => res.json() ) 
          .then( data => console.log(data) )
-         .catch( error => console.error(error) );   */
+         .catch( error => console.error(error) );   
          apiCall(i);
 
       };
@@ -341,7 +375,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
          spanloading.textContent = "";
 
          window.location.href = "http://127.0.0.1:3000/preview/"+id_rand+"/"+numnote;
-      }, tiemp2);
+      }, tiemp2);*/
    })
    //console.log("pic",pics);
    //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
@@ -367,10 +401,10 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
 
    })
 });*/
-
+/*
 document.getElementById('btn-preview').addEventListener("click", function(e) {
    window.location.href = "http://127.0.0.1:3000/preview/"+idvid+"/"+nombvid;
-});
+});*/
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
    //console.log("holaaa");
