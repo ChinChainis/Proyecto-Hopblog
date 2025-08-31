@@ -34,6 +34,9 @@
                         <div class="card-header">Crea tu usuario</div>
                         <div class="card-body">
                             <form method="post" action="/creausr">
+                                <% if(usurrepe == 1) { %>
+                                    <div>NOMBRE DE USUARIO REPETIDO</div>
+                                <% }%>
                                 <div >
                                     <label>Nombre de usuario</label>
                                     <input type="text" name="user_email" class="form-control" />
