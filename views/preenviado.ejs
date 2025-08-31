@@ -3,13 +3,13 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
+            <title>Video preview</title>
             <link href="/css/style.css" type="text/css" rel="stylesheet">
             <!--esto resuelve la falta de favicon ico-->
             <link rel="shortcut icon" href="#">
         </head>
         <body>
-            <h2>Animaciones</h2>
+            <h2>Pre-envío</h2>
             <div class="indice">
                 <a href="/">Inicio </a>
                 <a href="/seguridad">Perfil </a>
@@ -17,22 +17,23 @@
                 <a href="/muestra3">Galería</a> 
             </div>
 
-
-            <h3><%= name %></h3>
-            <video width="320" height="240" controls>            
-                <source src="/vids/<%= idanim %>.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video> 
-            <form method="post" action="/upload">
-                <input type="hidden" id="namevideo" name="vidname" value='<%= name %>'>
-                <input type="hidden" id="idvideo" name="vidid" value='<%= idanim %>'>
-                <input type="hidden" id="usuario" name="usuario" value='<%= session.user_email %>'>
-                <input type="text-area" name="etiquetas" class="form-control" />
-                <input type="checkbox" id="privado" name="privadocheck" value="ok">
-                <label for="privado">¿Privado?</label><br>
-                <input type="submit" class="btn btn-primary" value="Subir!" name="botonform" />
-                <input type="submit" class="btn btn-primary" value="Borrar" name="botonform" />
-            </form>
-
+            <div id="contenidoprev">
+                <h3><%= name %></h3>
+                <video width="320" height="240" controls>            
+                    <source src="/vids/<%= idanim %>.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video> 
+                <form method="post" action="/upload" id="formprev">
+                    <input type="hidden" id="namevideo" name="vidname" value='<%= name %>'>
+                    <input type="hidden" id="idvideo" name="vidid" value='<%= idanim %>'>
+                    <input type="hidden" id="usuario" name="usuario" value='<%= session.user_email %>'>
+                    <label for="privado">Introduce las etiquetas para tu video, separadas por comas por favor.</label><br>
+                    <input type="text-area" name="etiquetas" class="form-control" id="areatextoetq"/><br>
+                    <input type="checkbox" id="privado" name="privadocheck" value="ok">
+                    <label for="privado">¿Privado?</label><br>
+                    <input type="submit" id="botonsubida" class="btn btn-primary" value="Subir!" name="botonform" />
+                    <input type="submit" id="botonborradb" class="btn btn-primary" value="Borrar" name="botonform" />
+                </form>
+            </div>
         </body>
 </html>
