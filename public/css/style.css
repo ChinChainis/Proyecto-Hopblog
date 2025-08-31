@@ -138,11 +138,26 @@ body{
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
 }
+#btn-before{
+    background-image: url(./icons/flechaizq.png);
+    background-position: center;
+    background-size: cover;
+}
+
+#btn-next{
+    background-image: url(./icons/flechader.png);
+    background-position: center;
+    background-size: cover;
+}
 
 #borratodo{
     margin-left: 15%;
     width: 100px;
     height: 70px;
+    background-image: url(./icons/limpiar.png);
+    background-position: center;
+    background-size:70px;
+    background-repeat: no-repeat;
 }
 
 #guarda{
@@ -162,6 +177,62 @@ body{
     font-size: 0;
     width: 50px;
 }
+
+/*preenviado*/
+
+#contenidoprev{
+    text-align: center;
+}
+
+#contenidoprev > *{
+    margin: 10px;
+    font-family: Helvetica;
+}
+
+#contenidoprev > h3{
+    font-size: 45px;
+}
+
+#areatextoetq{
+    height: 50px;
+    font-size: 25px;
+}
+
+
+#formprev > *{ 
+    margin: 10px;
+}
+
+#botonsubida{
+  width: 80px;
+  height: 50px;
+  
+  border: 3px;
+  border-style: solid;
+  border-color: #E66E00;
+
+  background-image: url(./icons/subir.png);
+  background-size: 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: transparent;
+}
+#botonborradb{
+    width: 80px;
+    height: 50px;
+
+    border: 3px;
+    border-style: solid;
+    border-color: #E66E00;
+
+    background-image: url(./icons/poof.png);
+    background-size: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
+
+
 
 /*muestra*/
 
