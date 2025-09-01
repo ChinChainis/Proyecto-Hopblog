@@ -1,7 +1,3 @@
-const controller = new AbortController();
-const signal = controller.signal
-
-
 const canvas = document.getElementById("canvas");
 
 canvas.width = window.innerHeight -60;
@@ -138,8 +134,6 @@ function clear_canvas(){
    frame_array[index_frame] = []
 }
 
-// https://stackoverflow.com/questions/10673122/how-to-save-canvas-as-an-image-with-canvas-todataurl
-// Save | Download image
 function downloadImage(data, filename = 'untitled.jpeg') {
    var a = document.createElement('a');
    a.href = data;
