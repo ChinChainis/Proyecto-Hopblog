@@ -12,18 +12,16 @@
             <h2>Animaciones</h2>
             <div class="indice">
                 <a href="/">Inicio </a>
-                <a href="/seguridad">Perfil </a>
-                <a href="">Usuarios</a> 
+                <a href="/seguridad">Login</a>
                 <a href="/muestra3">Galería</a> 
                 <% if(rolactual=='administrador') { %>
-                    <a href="/totalAdmin">Galeria completa</a> 
+                    <a href="/totalAdmin">Moderar galería</a> 
                 <% } %>
                 <% if(session.user_email) { %>
                     <a href="/canvas">Animar</a> 
                 <% } %>
             </div>
             <aside>
-                <!--<p>The Epcot center is a theme park at Walt Disney World Resort featuring exciting attractions, international pavilions, award-winning fireworks and seasonal special events.</p>-->
                 Escribe las etiquetas que quieras buscar, separadas por comas:
                 <form method="post" action="/muestrabusqueda">
                     <input type="text-area" name="etiquetasbuscar" class="form-control" />
