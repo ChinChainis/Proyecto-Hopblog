@@ -74,7 +74,6 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
 
     //let variablestr = JSON.stringify(req.body.listf);
 
-
     var inBase64Format  = JSON.stringify(req.body )
 
     let numframe = inBase64Format.slice(1,2);
@@ -95,7 +94,7 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
 
 app.get('/creavideo/:id/:nombre',async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
-    const foldPath = './frames2';
+    const foldPath = './public/frames';
 
     fs.readdir(foldPath, function(err, files) {
     const txtFiles = files.filter(el => path.extname(el) === '.png');
@@ -130,14 +129,14 @@ app.get('/creavideo/:id/:nombre',async (req,res) => {
 
         let base64Image = JSON.stringify(notes[i]).split(';base64,').pop();
         console.log("BUFF: " + numframe);
-        fs.writeFile('./frames2/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
+        fs.writeFile('./public/frames/frame'+numframe+'.png', base64Image, {encoding: 'base64'}, function(err) {
             console.log('File created');
         });
     }
 
     ffmpeg()
 
-        .input('frames2/frame%01d.png')
+        .input('public/frames/frame%01d.png')
         .inputOptions('-framerate', '10')
         .videoCodec('libx264')
         .saveToFile('public/vids/'+id_ani+'.mp4')
