@@ -5,6 +5,8 @@ frames/
 frames2/
 public/vids/*
 !public/vids/.gitkeep
+public/frames/*
+!public/frames/.gitkeep
 video.mp4
 video3.mp4
 server_envio.js
