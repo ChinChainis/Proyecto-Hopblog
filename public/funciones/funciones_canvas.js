@@ -103,32 +103,26 @@ function stop(event) {
       event.preventDefault();
       restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
 
-      console.log(index_frame);
-
       //array de dibujos
       frame_array[index_frame]=restore_array;
 
       //frame_array[index_frame][index] = 0;
       //frame_array.splice(index_frame,0,restore_array);
-      //console.log(frame_array[index_frame][0]);
 
       index += 1;
    }
 
-   //console.log(frame_array);
 }
 
 function undo(){
    if (index <= 0){
       clear_canvas();
    } else {
-      console.log("indice antes undo: ",index);
 
       index -= 1;
       frame_array[index_frame].pop();
 
       //frame_array[index_frame] = restore_array;
-      console.log("ultimo dibujo: ",frame_array[index_frame][index]);
       context.putImageData(frame_array[index_frame][index], 0,0);
    }
 
@@ -156,7 +150,6 @@ function downloadImage(data, filename = 'untitled.jpeg') {
 /*
 // Convert canvas to image
 document.getElementById('btn-download').addEventListener("click", function(e) {
-   //console.log("holaaa");
 
    var canvas = document.querySelector('canvas');
 
@@ -166,7 +159,6 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
 });*/
 
 /*document.getElementById('btn-download-PNG').addEventListener("click", function(e) {
-   console.log(num_frames);
    var pics = [];
 
    for (let i = 0; i < num_frames; i++) {
@@ -178,12 +170,10 @@ document.getElementById('btn-download').addEventListener("click", function(e) {
       //var datosimg = canvas.toDataURL().split(';base64,')[1];
       var datosimg =  canvas.toDataURL("image/base64", 1.0);
       pics.push(datosimg);
-      //console.log(pics);
       //pics.push(frame_array[i]);
       //pics.push(a);
       //a.click();
-      //console.log("datos: " + JSON.stringify(datosimg));
-      //console.log("pics: " + JSON.stringify(pics));
+
 
 
       let downloadLink = document.createElement('a');
@@ -231,12 +221,10 @@ function envioframes(id_rand,numnote){
          context.putImageData(frame_array[i][tamtotal], 0,0);  
          var canvas = document.querySelector('canvas');
          var datosimg =  canvas.toDataURL("image/base64", 1.0);
-         console.log('frame numeroo: ', i+1);
 
          listaframesstrings.push("[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]");
 
          if(i%2==0 && i!=num_frames-1 && i!=0){
-            console.log("batch completado")
             apiCall(listaframesstrings);
             listaframesstrings = [];
             listaframesstrings.push("[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]");
@@ -253,7 +241,6 @@ function envioframes(id_rand,numnote){
          //var datosimg = canvas.toDataURL().split(';base64,')[1];
          var datosimg =  canvas.toDataURL("image/base64", 1.0);
          //pics.push(datosimg);
-         console.log('frame numeroo: ', i+1);
 
          apiCall(i);
       }
@@ -274,7 +261,6 @@ function renderizaprev(id_rand,numnote){
 
 
 document.getElementById('btn-video').addEventListener("click", function(e) {
-   console.log(num_frames);
    var pics = [];
    /*
    for (let i = 0; i < num_frames; i++) {
@@ -291,7 +277,6 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
    //var datosimg =  canvas.toDataURL("image/jpeg", 1.0);
    spanloading.textContent = "por favor espera!";
 
-   console.log("dentro form ");
    const arrayDestinedForServer = [ "A", 42, false ]; // This would be your cArray
 
    const form = document.querySelector("form");
@@ -407,7 +392,6 @@ document.getElementById('btn-preview').addEventListener("click", function(e) {
 });*/
 
 document.getElementById('btn-next').addEventListener("click", function(e) {
-   //console.log("holaaa");
    index_frame += 1;
    tmpspan.textContent = index_frame + 1;
    
@@ -418,17 +402,12 @@ document.getElementById('btn-next').addEventListener("click", function(e) {
       tmpspant.textContent = num_frames;
 
       restore_array = [];
-      console.log("num. frames: ",num_frames);
    }else{
-      console.log("frame: ",index_frame);
-      //console.log("indice: ",index);
       index = frame_array[index_frame].length - 1;
       context.putImageData(frame_array[index_frame][index], 0,0);  
    }
    
    /*else if(frame_array[index_frame].length >= 1){
-      console.log("frame: ",index_frame);
-      //console.log("indice: ",index);
       index = frame_array[index_frame].length - 1;
       context.putImageData(frame_array[index_frame][index], 0,0);       
    }else{
@@ -445,12 +424,12 @@ document.getElementById('btn-before').addEventListener("click", function(e) {
       tmpspan.textContent = index_frame + 1;
 
       if(frame_array[index_frame].length == 0){
-         console.log("aa");
+         console.log("tope alcanzado");
       }
       if(frame_array[index_frame].length >= 1){
          index = frame_array[index_frame].length - 1;
-         console.log("frame: ",index_frame);
-         console.log("indice: ",index);
+         //console.log("frame: ",index_frame);
+         //console.log("indice: ",index);
          context.putImageData(frame_array[index_frame][index], 0,0); 
                
       }else{
@@ -458,8 +437,7 @@ document.getElementById('btn-before').addEventListener("click", function(e) {
       }
    }
    else{
-      console.log("frena que no hay más");
+      console.log("No hay más frames");
    }
-   console.log("frame: ",index_frame);
-   console.log("indice: ",index);
+
 });
