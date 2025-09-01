@@ -1,8 +1,6 @@
 procesamiento_video.js
 package-lock.json
 node_modules/
-frames/
-frames2/
 public/vids/*
 !public/vids/.gitkeep
 public/frames/*
