@@ -131,7 +131,7 @@ app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
                 //res.write('todo correcto');
             }else{
                 res.status(401);
-                res.render('seguridad',{session:''});
+                res.render('seguridad',{session:'ERRORCONT'});
             }
             
         }else{
@@ -164,10 +164,10 @@ app.get('/muestra3', async (req,res) => {
             let nombrevid = notes[0]["urltitulo"];
             let autoractual = notes[0]["autor"];
             if(privado == 0){
-                newvidreos.push([nomv,nombrevid]);
+                newvidreos.push([nomv,nombrevid,autoractual]);
             }
             if(privado == 1 && req.session.user_email == autoractual){
-                newvidreos.push([nomv,nombrevid]);
+                newvidreos.push([nomv,nombrevid,autoractual]);
             }
         }
     }
@@ -184,7 +184,7 @@ app.get('/muestra3', async (req,res) => {
     let HTML_ARCH = `
             ${newvidreos.map(i=>`
                 <div id='contienevideo'> 
-                    <h3>${ i[1] }</h3>
+                    <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
                     <video width="640" height="480" controls>
                     <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
@@ -206,7 +206,7 @@ app.get('/totalAdmin', async (req,res) => {
             let privado = notes[0]["privado"];
             let nombrevid = notes[0]["urltitulo"];
             let autoractual = notes[0]["autor"];
-            newvidreos.push([nomv,nombrevid]);
+            newvidreos.push([nomv,nombrevid,autoractual]);
 
         }
     }
@@ -214,7 +214,7 @@ app.get('/totalAdmin', async (req,res) => {
     let HTML_ARCH = `
             ${newvidreos.map(i=>`
                 <div id='contienevideo'> 
-                    <h3>${ i[1] }</h3>
+                    <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
                     <div id="contenedorvideo">
                         <video width="640" height="480" controls>
                         <source src="/vids/${i[0]}" type="video/mp4">
@@ -272,7 +272,6 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
         let notes = await getVidIDbyUrl(nomv); 
-        //console.log("resul: " + nomv + ' ' + JSON.stringify(notes[0]));
 
         if(notes.length > 0){
             let privado = notes[0]["privado"];
@@ -282,33 +281,37 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             for (let i = 0; i < etiquetas.length; i++) {
                 if(etiqetasvideo.search(etiquetas[i]) != -1){
                     if(privado == 0){
-                        videosfiltrados.push([nomv,nombrevid]);
+                        videosfiltrados.push([nomv,nombrevid,autoractual]);
                     }
                     if(privado == 1 && req.session.user_email == autoractual){
-                        videosfiltrados.push([nomv,nombrevid]);
+                        videosfiltrados.push([nomv,nombrevid,autoractual]);
                     }
                 }
 
                 if( autoractual == etiquetas[i] ){
                     if(privado == 0){
-                        videosfiltrados.push([nomv,nombrevid]);
+                        videosfiltrados.push([nomv,nombrevid,autoractual]);
                     }
                 }
             };
             //si es privado no se enseña a menos que el autor sea el mismo que el session.user
-            //console.log(etiqetasvideo);
-            //newvidreos.push(nomv);
+
         }
     }
-    //console.log(videosfiltrados);
 
+    let rolusr = '';
+
+    if(req.session.user_email){
+        const aut = await getUsuario(req.session.user_email);
+        rolusr = aut[0]["rol"];
+    }
 
     let videosfiltrados2 = videosfiltrados.filter((item, index) => videosfiltrados.indexOf(item) === index);
 
 
     let HTML_ARCH = `
             ${videosfiltrados2.map(i=>`
-                <span id='contienevideo'> ${i[1]}
+                <span id='contienevideo'> <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
                 <video width="640" height="480" controls>
                 <source src="/vids/${i[0]}" type="video/mp4">
                 Your browser does not support the video tag.
@@ -316,7 +319,7 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
             </span> `).join('') }
         `
 
-    res.render('galeria', {session: req.session,images:HTML_ARCH,rolactual:''});
+    res.render('galeria', {session: req.session,images:HTML_ARCH,rolactual:rolusr});
 
 });
 
@@ -335,16 +338,17 @@ app.get('/usuario/:nombre', async (req,res) => {
         let notes = await getVidIDbyUrl(nomv); 
         if(notes.length > 0){
             let nombrevid = notes[0]["urltitulo"];
-           if( notes[0]["autor"] == name && notes[0]["privado"] == 0){
-                newvidreos.push([nomv,nombrevid]);
-            }
-            else if( name == req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name){
-                //console.log(nombrevid);
-                newvidreos.push([nomv,nombrevid]);
-            }else if( name != req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name && aut[0]["rol"] == "administrador"){
-                //console.log(nombrevid);
-                newvidreos.push([nomv,nombrevid]);
-            }
+            let autoractual = notes[0]["autor"];
+            if( notes[0]["autor"] == name && notes[0]["privado"] == 0){
+                    newvidreos.push([nomv,nombrevid,autoractual]);
+                }
+                else if( name == req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name){
+                    //console.log(nombrevid);
+                    newvidreos.push([nomv,nombrevid,autoractual]);
+                }else if( name != req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name && aut[0]["rol"] == "administrador"){
+                    //console.log(nombrevid);
+                    newvidreos.push([nomv,nombrevid,autoractual]);
+                }
         }
     }
 
@@ -361,7 +365,8 @@ app.get('/usuario/:nombre', async (req,res) => {
 
         let HTML_ARCH = `
                 ${newvidreos.map(i=>`
-                    <div id='contienevideo'>${i[1]}          
+                    <div id='contienevideo'>
+                    <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>         
                     <video width="640" height="480" controls>
                     <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
@@ -434,8 +439,8 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
     }
 
 
-
-    res.redirect('/'); //tmp
+    let direccion = '/usuario/'+autorvid;
+    res.redirect(direccion);
 });
 
 
