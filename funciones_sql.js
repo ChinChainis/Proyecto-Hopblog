@@ -35,7 +35,6 @@ const pool = mysql.createPool({
     return rows
 }*/
 
-const result = await getFrames();
 
 //console.log(result);
 /*
