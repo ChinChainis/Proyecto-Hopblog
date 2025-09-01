@@ -20,18 +20,19 @@
                 <div>&nbsp;</div>
                 <div>
                 <% if(session.user_email) { %>
-
+                    
                     <h1>Hi User, Welcome <%= session.user_email %></h1>
+                    <div id="enlacesapags">
+                        <a href="/usuario/<%= session.user_email %>" id="enlaceaperfil">Perfil </a><br>
 
-                    <a href="/usuario/<%= session.user_email %>">Perfil </a><br>
 
-
-                    <a href="/logout" class="btn btn-primary">Logout</a>
-
+                        <a href="/logout" class="btn btn-primary" id="enlacealogout">Salir</a>
+                    </div>
                 <% } else { %>
 
                     <div class="card">
-                        <div class="card-header">Crea tu usuario</div>
+                        <a id="creausr" href="/seguridad">Volver a login </a><br>
+                        <h3>Crea tu usuario</h3>
                         <div class="card-body">
                             <form method="post" action="/creausr">
                                 <% if(usurrepe == 1) { %>
@@ -46,7 +47,7 @@
                                     <input type="password" name="user_password" class="form-control" />
                                 </div>
                                 <div>
-                                    <input type="submit" class="btn btn-primary" value="Crear" />
+                                    <input type="submit" id="botonlogin" class="btn btn-primary" value="Crear" />
                                 </div>
                             </form>
                         </div>
