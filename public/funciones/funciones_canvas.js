@@ -289,83 +289,16 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       let tiempotot = num_frames * 2500;
 
       const myPromise = new Promise((resolve) => {
-         //setTimeout(envioframes(id_rand,numnote),tiempotot);
-         //setTimeout(() => {
-            // Other things to do before completion of the promise
+
             envioframes(id_rand,numnote);
-            // The fulfillment value of the promise
-            //resolve(renderizavid(id_rand,numnote));
-         //   resolve(envioframes(id_rand,numnote));
-         //}, tiempotot);
+
       });
       myPromise
       .then(setTimeout(() => { renderizavid(id_rand,numnote)}, tiempotot))
       .then(setTimeout(() => { renderizaprev(id_rand,numnote)}, tiempotot+2000));
-      //myPromise.then(renderizavid(id_rand,numnote)).catch( error => console.error(error) );
-      //myPromise.then(renderizavid(id_rand,numnote)).catch( error => console.error(error) ); 
-      //envioframes(id_rand,numnote).then(() => { return renderizavid(id_rand,numnote) }).then((result) => { console.log(result)});
-      
-      /*idvid = id_rand;
-      nombvid = numnote;
 
-      const apiCall = (posact) => fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
-            method: "POST",
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: "[" + JSON.stringify(posact+1) + "," + JSON.stringify(datosimg) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
-         })
-         .then( res => res.json() ) 
-         .then( data => console.log(data) )
-         .catch( error => console.error(error) );   
-
-
-      for (let i = 0; i < num_frames; i++) {
-
-         var tamtotal = frame_array[i].length - 1;
-         context.putImageData(frame_array[i][tamtotal], 0,0);  
-         var nomarchivo = 'frame' + i + '.png';
-         var a = document.createElement('a');
-         var canvas = document.querySelector('canvas');
-         //var datosimg = canvas.toDataURL().split(';base64,')[1];
-         var datosimg =  canvas.toDataURL("image/base64", 1.0);
-         //pics.push(datosimg);
-         console.log('frame numeroo: ', i+1);
-         fetch("http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote, {
-            method: "POST",
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: "[" + JSON.stringify(i+1) + "," + JSON.stringify(datosimg) + "]"//btoa( unescape(encodeURIComponent (JSON.stringify(pics))) )
-         })
-         .then( res => res.json() ) 
-         .then( data => console.log(data) )
-         .catch( error => console.error(error) );   
-         apiCall(i);
-
-      };
-      console.log("fin bucle");
-      frame_array = []
-      index_frame = 0;
-      //poner tiempo de espera equivalente al número de frames?
-      let tiemp = (num_frames*2500);
-      setTimeout(function(){
-         
-         fetch("http://127.0.0.1:3000/creavideo/"+id_rand+"/"+numnote);
-         
-      }, tiemp);
-      //console.log('tiemp: ',tiemp);
-      let tiemp2 = tiemp * 5;
-      setTimeout(function(){
-         spanloading.textContent = "";
-
-         window.location.href = "http://127.0.0.1:3000/preview/"+id_rand+"/"+numnote;
-      }, tiemp2);*/
    })
-   //console.log("pic",pics);
-   //https://www.geeksforgeeks.org/how-to-generate-video-from-images-in-html5/
 
-   //https://stackoverflow.com/questions/42798219/pipe-multiple-jpgs-into-an-animated-gif-using-node-js
 
 });
 
