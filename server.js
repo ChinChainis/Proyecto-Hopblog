@@ -52,7 +52,7 @@ function loginRequired(req, res, next) {
 
 //app.use(express.static(staticPath));
 
-var portname = '127.0.0.1';
+var portname = '0.0.0.0';
 var port = process.env.PORT || 3000;
 
 app.set('views', path.join(__dirname, 'views'));
