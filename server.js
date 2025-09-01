@@ -74,13 +74,9 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
 
     //let variablestr = JSON.stringify(req.body.listf);
 
-    //console.log("dentro creavideo:" + req.body);
-    //console.log("dentro creavideo:" + variablestr.split(']')[1]);
 
-    //console.log("dentro server " + req.body  ); // <== Receives: [ 'A', 42, false ]
     var inBase64Format  = JSON.stringify(req.body )
 
-    console.log("dentro server parte principio " + inBase64Format.slice(1,3)); 
     let numframe = inBase64Format.slice(1,2);
 
     let base64Image = inBase64Format.split(';base64,').pop();   
@@ -99,7 +95,6 @@ app.post("/frames/:id/:nombre", upload.single('file'), (req,res)=>{
 
 app.get('/creavideo/:id/:nombre',async (req,res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
-    //console.log('eeoooo');
     const foldPath = './frames2';
 
     fs.readdir(foldPath, function(err, files) {
@@ -126,7 +121,6 @@ app.get('/creavideo/:id/:nombre',async (req,res) => {
 
     const nom = req.params.nombre;
 
-    console.log("dentro creavideo:" + id_ani);
 
     const notes = await getImgIDbyId(id_ani);
     console.log("base de datos: " + notes.length);
