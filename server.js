@@ -10,7 +10,7 @@ import multer from 'multer';
 import session from 'express-session';
 import app from './video.js'
 
-import {getImgIDbyId,insertarFrameID,getFramesbyId, deleteIMGID, getUsuario,insertaUsuario, insertaVideoID, insertaVideo3, deleteIMG,getImgbyTitulo, getVidbyAutor, getVidbyUrl} from './funciones_sql.js';
+import {getImgIDbyId,insertarFrameID} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
