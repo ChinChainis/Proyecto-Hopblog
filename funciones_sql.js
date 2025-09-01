@@ -30,10 +30,10 @@ const pool = mysql.createPool({
 
 //al devolver, normalmente la query devuelve el array, así que necesitamos el primer array de datos
 //y lo metemos en un async para que no dependa del tiempo de llamada
-export async function getFrames() {
+/*export async function getFrames() {
     const [rows] = await pool.query("SELECT * FROM frames2")
     return rows
-}
+}*/
 
 const result = await getFrames();
 
