@@ -38,7 +38,7 @@ export async function getFrames() {
 const result = await getFrames();
 
 //console.log(result);
-
+/*
 export async function getFramesbyId(id) {
   const [rows] = await pool.query(`
     SELECT * 
@@ -71,7 +71,7 @@ await pool.query(`
   INSERT INTO frames2(id,titulo,frame)
   VALUES(?,?,?)
   `,[id,titulo,img])  
-}
+}*/
 
 
 export async function getImgIDbyId(id) {
@@ -100,7 +100,7 @@ export async function deleteIMGID(id) {
 }
 
 
-
+/*
 export async function insertaVideo(id,au,vid) {
 await pool.query(`
   INSERT INTO videos2(id,autor,urlvideo)
@@ -142,7 +142,7 @@ export async function deleteIMG(titl) {
   return rows
 }
 
-
+*/
 export async function getUsuario(nic) {
   const [rows] = await pool.query(`
     SELECT * 
