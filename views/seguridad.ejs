@@ -22,22 +22,27 @@
                 <% if(session.user_email) { %>
 
                     <h1>¡Hola!, bienvenido <%= session.user_email %></h1>
+                    <div id="enlacesapags">
 
-                    <a href="/usuario/<%= session.user_email %>">Perfil </a><br>
+                        <a href="/usuario/<%= session.user_email %>" id="enlaceaperfil">Perfil</a><br>
 
 
-                    <a href="/logout" class="btn btn-primary">Cerrar sesión</a>
+                        <a href="/logout" class="btn btn-primary" id="enlacealogout">Salir</a>
+                    </div>
 
                 <% } else { %>
 
                     <div class="card">
                         <a id="creausr" href="/creausuario">Crear usuario </a><br>
-                        <div class="card-header">Login</div>
+                        <div class="card-header"></div>
                         <div class="card-body">
 
                             <form method="post" action="/login">
                                 <% if(session == 'ERROR') { %>
                                     <div>NOMBRE DE USUARIO INCORRECTO</div>
+                                <% }%>
+                                <% if(session == 'ERRORCONT') { %>
+                                    <div>CONTRASEÑA INCORRECTA</div>
                                 <% }%>
                                 <div >
                                     <label>Nombre de usuario</label>
@@ -48,7 +53,7 @@
                                     <input type="password" name="user_password" class="form-control" />
                                 </div>
                                 <div>
-                                    <input type="submit" class="btn btn-primary" value="Login" />
+                                    <input type="submit" id="botonlogin" class="btn btn-primary" value="Login" />
                                 </div>
                             </form>
                         </div>
