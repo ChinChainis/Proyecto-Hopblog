@@ -195,7 +195,7 @@ function envioframes(id_rand,numnote){
       //let listaframesstrings = [];
       //https://proyecto-hopblog.onrender.com/
       //"http://127.0.0.1:3000/frames/"+id_rand+"/"+numnote
-      const apiCall = (posact) => fetch("https://proyecto-hopblog.onrender.com/"+id_rand+"/"+numnote, {
+      const apiCall = (posact) => fetch("https://proyecto-hopblog.onrender.com/frames/"+id_rand+"/"+numnote, {
             method: "POST",
             signal: signal,
             headers: {
@@ -244,13 +244,13 @@ function envioframes(id_rand,numnote){
 
 function renderizavid(id_rand,numnote){
    //fetch("http://127.0.0.1:3000/creavideo/"+id_rand+"/"+numnote);
-   window.location.href = "https://proyecto-hopblog.onrender.com/"+id_rand+"/"+numnote;
+   window.location.href = "https://proyecto-hopblog.onrender.com/creavideo/"+id_rand+"/"+numnote;
 }
 
 function renderizaprev(id_rand,numnote){
    spanloading.textContent = "";
 
-   window.location.href = "https://proyecto-hopblog.onrender.com/"+id_rand+"/"+numnote;
+   window.location.href = "https://proyecto-hopblog.onrender.com/preview/"+id_rand+"/"+numnote;
 }
 
 
