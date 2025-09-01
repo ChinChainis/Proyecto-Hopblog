@@ -9,7 +9,7 @@ import cors from 'cors';
 import multer from 'multer';
 import session from 'express-session';
 
-import {insertaUsuario,getTituloIDbyUrl,getVidIDbyUrl,getFramesbyId, deleteIMGID, getUsuario, deleteVidIDbyUrl, insertaVideoID} from './funciones_sql.js';
+import {insertaUsuario,getVidIDbyUrl, deleteIMGID, getUsuario, deleteVidIDbyUrl, insertaVideoID} from './funciones_sql.js';
 
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
