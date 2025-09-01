@@ -103,10 +103,6 @@ app.get('/seguridad',(req,res) => {
         <strong>${req.session.visitas}</strong> veces.` );*/
 });
 
-app.get('/seguridadresul',(req,res) => {
-    res.render('index', { session : req.session });
-});
-
 app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
     const {user_email,user_password } = req.body;
     var fallolog = 0;
