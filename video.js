@@ -104,25 +104,18 @@ app.get('/seguridad',(req,res) => {
 });
 
 app.get('/seguridadresul',(req,res) => {
-    //console.log(req.session);
     res.render('index', { session : req.session });
 });
 
 app.post('/login', express.urlencoded({ extended: true }),async (req,res) =>{
     const {user_email,user_password } = req.body;
     var fallolog = 0;
-    //console.log(req.body);
-    //console.log(user_email,user_password);
     var user_mail_address = user_email;
     //var passwd = user_password;
-    //console.log("fueraaa",user_mail_address );
     if(user_mail_address && user_password){
-        //console.log("aaaa",user_mail_address);
         //res.redirect("/");
         const notes = await getUsuario(user_mail_address);
-        //console.log("contrasenia: ",notes[0].contrasenia);
 
-        //console.log(notes);
         if(notes.length > 0){
             if( user_password == notes[0].contrasenia ){
                 req.session.user_email = notes[0].nick ;
@@ -175,10 +168,8 @@ app.get('/muestra3', async (req,res) => {
     let rolusr = '';
 
     if(req.session.user_email){
-        console.log('aaa: ',req.session.user_email);
         const aut = await getUsuario(req.session.user_email);
         rolusr = aut[0]["rol"];
-        console.log(rolusr);
     }
 
     let HTML_ARCH = `
@@ -233,11 +224,9 @@ app.get('/totalAdmin', async (req,res) => {
 });
 
 app.post('/borravid', express.urlencoded({ extended: false }),async (req,res) => {
-    //console.log(req.body.idvideoborrar);
     //93786 | Antonio | caradiente.mp4  | cara,susto,dientes |       0 
     let nomvid = req.body.idvideoborrar.split('.');
     const vidaborrar = await getVidIDbyUrl(nomvid[0]);
-    //console.log("totaladmin : ",vidaborrar[0]["urltitulo"]);
     const ordenborra = await deleteVidIDbyUrl(nomvid[0]);
     res.redirect('/totalAdmin');
 
@@ -246,7 +235,6 @@ app.post('/borravid', express.urlencoded({ extended: false }),async (req,res) =>
     fs.readdir(foldPath, function(err, files) {
 
         const txtFiles = files.filter(el => path.dirname(el) === nomvid);
-        console.log(txtFiles);
             //for (let i = 0; i < txtFiles.length; i++) {
         let filePath = foldPath + "/" + nomvid[0] + ".mp4";
         console.log("filepath: ",filePath);
@@ -328,7 +316,6 @@ app.get('/usuario/:nombre', async (req,res) => {
     const images = await fs.promises.readdir('public/vids')
     let name = req.params.nombre;
 
-    //console.log("vidreos: " + name + " -> " + req.session.user_email);
     const aut = await getUsuario(name);
 
 
@@ -343,10 +330,8 @@ app.get('/usuario/:nombre', async (req,res) => {
                     newvidreos.push([nomv,nombrevid,autoractual]);
                 }
                 else if( name == req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name){
-                    //console.log(nombrevid);
                     newvidreos.push([nomv,nombrevid,autoractual]);
                 }else if( name != req.session.user_email && notes[0]["privado"] == 1 && notes[0]["autor"] == name && aut[0]["rol"] == "administrador"){
-                    //console.log(nombrevid);
                     newvidreos.push([nomv,nombrevid,autoractual]);
                 }
         }
@@ -357,9 +342,7 @@ app.get('/usuario/:nombre', async (req,res) => {
         let rolusr = '';
 
         if(aut[0]["rol"] == "administrador"){
-            //console.log('aaa: ',req.session.user_email);
             rolusr = aut[0]["rol"];
-            //console.log(rolusr);
         }
 
 
@@ -376,7 +359,7 @@ app.get('/usuario/:nombre', async (req,res) => {
 
         res.render('galeria', {session: req.session,images:HTML_ARCH,rolactual:rolusr});
     }else{
-        console.log("EEEEEEEEEEEEEEEE LOGEATE");
+        console.log("USUARIO SIN IDENTIFICAR");
         res.redirect('/seguridad');
     }
 });
@@ -385,7 +368,6 @@ app.get('/preview/:id/:nombre', async (req,res) => {
     //var name = 'anima2.mp4';
     let name = req.params.nombre + '.mp4';
     let id = Math.round(req.params.id);
-    //console.log('dentro preview: ',name);
     res.render('preenviado', {name:name,idanim:id,session: req.session});
 
 });
@@ -398,9 +380,7 @@ app.post('/upload', express.urlencoded({ extended: false }),async (req,res) =>{
     let nomvid = req.body.vidname;
     let idvid = req.body.vidid;
     let autorvid = req.body.usuario;
-    console.log("nombre: ", nomvid);
-    console.log("uploadd: ",etiquetas, " privado: ", privado);
-    console.log("boton: ",req.body.botonform);
+
     if(req.body.botonform == 'Subir!'){
         let id_rand = Math.floor(Math.random() * (10000 - 1000) + 1000);
 
