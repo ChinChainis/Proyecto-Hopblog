@@ -198,13 +198,13 @@ describe('POST /muestrabusqueda', () => {
 
 describe('GET /totalAdmin', () => {
     describe("Accediendo a la galería", ()=>{
-        test("debería responde con status code 200", async () =>{
+        test("debería responde con status code 302", async () =>{
             const response = await request(app).get("/totalAdmin").send();
-            expect(response.statusCode).toBe(200);
+            expect(response.statusCode).toBe(302);
         })
         test("debería responde con la página html con los resultados", async () =>{
             const response = await request(app).get("/totalAdmin").send();
-            expect(response.headers['content-type']).toEqual(expect.stringContaining("html"));
+            expect(response.text).toBe("Found. Redirecting to /muestra3");
         })
     })
 });
@@ -254,26 +254,28 @@ describe('POST /upload', () => {
     })
     describe("Con id, nombre, etiquetas, no privado", ()=>{
         test("debería responder con redirección al subir", async () =>{
+            var usuractual = 'Antonio';
             const response = await request(app).post("/upload").send({
                 botonform : 'Subir!',
-                usuario : 'Antonio',
+                usuario : usuractual,
                 vidid : 333,
                 vidname : 'video.pm4',
                 etiquetas : 'cara,ojo',
                 privadocheck : 0
             })
-            expect(response.text).toBe("Found. Redirecting to /");
+            expect(response.text).toBe("Found. Redirecting to /usuario/"+usuractual);
         })
         test("debería responder con redirección al borrar", async () =>{
+            var usuractual = 'Antonio';
             const response = await request(app).post("/upload").send({
                 botonform : 'Borrar',
-                usuario : 'Antonio',
+                usuario : usuractual,
                 vidid : 333,
                 vidname : 'video.pm4',
                 etiquetas : 'cara,ojo',
                 privadocheck : 0
             })
-            expect(response.text).toBe("Found. Redirecting to /");
+            expect(response.text).toBe("Found. Redirecting to /usuario/"+usuractual);
         })
     })
 });
