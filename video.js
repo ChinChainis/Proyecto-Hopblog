@@ -184,38 +184,49 @@ app.get('/muestra3', async (req,res) => {
 });
 
 app.get('/totalAdmin', async (req,res) => {
-    const images = await fs.promises.readdir('public/vids')
-    let newvidreos = [];
-    for (let i = 0; i < images.length; i++) {
-        let nomv =images[i];
-        let notes = await getVidIDbyUrl(nomv); 
-        if(notes.length > 0){
-            let privado = notes[0]["privado"];
-            let nombrevid = notes[0]["urltitulo"];
-            let autoractual = notes[0]["autor"];
-            newvidreos.push([nomv,nombrevid,autoractual]);
+    const buscaadmin = await getUsuario(req.session.user_email);
 
+    if(buscaadmin.length > 0){
+        if(buscaadmin[0]["rol"] == "administrador"){
+            const images = await fs.promises.readdir('public/vids')
+            let newvidreos = [];
+            for (let i = 0; i < images.length; i++) {
+                let nomv =images[i];
+                let notes = await getVidIDbyUrl(nomv); 
+                if(notes.length > 0){
+                    let privado = notes[0]["privado"];
+                    let nombrevid = notes[0]["urltitulo"];
+                    let autoractual = notes[0]["autor"];
+                    newvidreos.push([nomv,nombrevid,autoractual]);
+
+                }
+            }
+
+            let HTML_ARCH = `
+                    ${newvidreos.map(i=>`
+                        <div id='contienevideo'> 
+                            <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
+                            <div id="contenedorvideo">
+                                <video width="640" height="480" controls>
+                                <source src="/vids/${i[0]}" type="video/mp4">
+                                Your browser does not support the video tag.
+                                </video>
+                                <form method="post" action="/borravid">
+                                    <input type="hidden" id="idvideoborrar" name="idvideoborrar" value=${i[0]}>
+                                    <input type="submit" class="btn btn-primary" id="borraboton" value="" name="botonborrar" />
+                                </form>
+                            </div>
+                        </div> `).join('') }
+                `
+
+            res.render('galeria',{session: req.session,images:HTML_ARCH,rolactual:'administrador'});
+        }else{
+            res.redirect('/muestra3');
         }
+    }else{
+        res.redirect('/muestra3');
     }
 
-    let HTML_ARCH = `
-            ${newvidreos.map(i=>`
-                <div id='contienevideo'> 
-                    <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
-                    <div id="contenedorvideo">
-                        <video width="640" height="480" controls>
-                        <source src="/vids/${i[0]}" type="video/mp4">
-                        Your browser does not support the video tag.
-                        </video>
-                        <form method="post" action="/borravid">
-                            <input type="hidden" id="idvideoborrar" name="idvideoborrar" value=${i[0]}>
-                            <input type="submit" class="btn btn-primary" id="borraboton" value="" name="botonborrar" />
-                        </form>
-                    </div>
-                </div> `).join('') }
-        `
-
-    res.render('galeria',{session: req.session,images:HTML_ARCH,rolactual:'administrador'});
 
 });
 
