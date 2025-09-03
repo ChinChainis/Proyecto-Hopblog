@@ -8,7 +8,7 @@
         <!-- Bootstrap CSS -->
         <link href="/css/style.css" rel="stylesheet">
         <link rel="shortcut icon" href="#">
-        <title>Login System in Node.js Express</title>
+        <title>Crear usuario</title>
 
     </head>
     <body class="seguridad">
@@ -21,7 +21,7 @@
                 <div>
                 <% if(session.user_email) { %>
                     
-                    <h1>Hi User, Welcome <%= session.user_email %></h1>
+                    <h1>¡Hola!, bienvenido <%= session.user_email %></h1>
                     <div id="enlacesapags">
                         <a href="/usuario/<%= session.user_email %>" id="enlaceaperfil">Perfil </a><br>
 
