@@ -144,12 +144,10 @@ app.get('/logout',function(request,response,next){
 
 app.get('/muestra3', async (req,res) => {
     const images = await fs.promises.readdir('public/vids');
-    console.log(images);
     let newvidreos = [];
     for (let i = 0; i < images.length; i++) {
         let nomv =images[i];
         let notes = await getVidIDbyUrl(nomv); 
-        console.log(notes);
         if(notes.length > 0){
             let privado = notes[0]["privado"];
             let nombrevid = notes[0]["urltitulo"];
