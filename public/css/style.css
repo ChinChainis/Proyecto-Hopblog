@@ -115,10 +115,6 @@ body *{
     flex-direction: row;
 }
 
-#borratodo{
-    margin-right: 800px;
-}
-
 .pasoframe{
     display: flex;
     justify-content: right;
@@ -155,6 +151,7 @@ body *{
 }
 
 #borratodo{
+    margin-right: 46%;
     margin-left: 15%;
     width: 100px;
     height: 70px;
@@ -181,6 +178,8 @@ body *{
     font-size: 0;
     width: 50px;
 }
+
+
 
 /*preenviado*/
 
@@ -307,6 +306,10 @@ aside {
 
 #titulovideo{
     font-size: 25px;
+}
+
+#privavideo{
+    color: red;
 }
 
 /*seguridad*/
