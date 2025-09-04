@@ -1,16 +1,12 @@
-# Trabajo de Fin de Grado: *Hopblog*
+# Trabajo de Fin de Grado: *Proyecto Hopblog*
 
-Nombre sujeto a cambio
-
-**Este sería el README de tu proyecto. Consulta las [instrucciones de
-instalación](INSTALL.md)
 
 ### Autor: Antonio Sánchez Alcaraz
 ### Tutor: Pablo García Sánchez
 ___
 
 
-## *Herramienta de animación online*
+## *Herramienta web de animación online*
 
 **Implementación web del software Flipnote Studio del sistema Nintendo DS y 3DS a lenguaje de marcado nativo**
 
@@ -24,8 +20,6 @@ Una vez con la estructura de carpetas desplegada en su dispositivo de abre un in
 
 Hay que comprobar las variables de entorno que se empleen, dado que para este proyecto usa una alojada en Clever Cloud privada, aconsejable crear archivo .env con variables de ```MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD y MYSQL_DB``` correspondientes.
  
-
-[Contribution guidelines for this project](docs/CONTRIBUTING.md)
 
 
 
