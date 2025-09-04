@@ -281,7 +281,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       e.preventDefault();
       let numnote = (document.getElementById("fname").value).replace(/ /g,"_");
 
-      let tiempotot = num_frames * 3500;
+      let tiempotot = num_frames * 3000;
 
       const myPromise = new Promise((resolve) => {
 
@@ -290,7 +290,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       });
       myPromise
       .then(setTimeout(() => { renderizavid(id_rand,numnote)}, tiempotot))
-      .then(setTimeout(() => { renderizaprev(id_rand,numnote)}, tiempotot+2000));
+      .then(setTimeout(() => { renderizaprev(id_rand,numnote)}, tiempotot+5000));
 
    })
 
