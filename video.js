@@ -172,7 +172,7 @@ app.get('/muestra3', async (req,res) => {
             ${newvidreos.map(i=>`
                 <div id='contienevideo'> 
                     <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
-                    <video width="640" height="480" controls>
+                    <video width="600" height="300" controls>
                     <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
                     </video>
@@ -197,7 +197,11 @@ app.get('/totalAdmin', async (req,res) => {
                     let privado = notes[0]["privado"];
                     let nombrevid = notes[0]["urltitulo"];
                     let autoractual = notes[0]["autor"];
-                    newvidreos.push([nomv,nombrevid,autoractual]);
+                    let etiqprivado = '';
+                    if(privado == 1){
+                        etiqprivado="PRIVADO->";
+                    }
+                    newvidreos.push([nomv,nombrevid,autoractual,etiqprivado]);
 
                 }
             }
@@ -205,15 +209,15 @@ app.get('/totalAdmin', async (req,res) => {
             let HTML_ARCH = `
                     ${newvidreos.map(i=>`
                         <div id='contienevideo'> 
-                            <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
+                            <h3 id="titulovideo"> <span id="privavideo"> ${ i[3] } </span> ${ i[1] } de ${ i[2] }</h3>
                             <div id="contenedorvideo">
-                                <video width="640" height="480" controls>
+                                <video width="600" height="300" controls>
                                 <source src="/vids/${i[0]}" type="video/mp4">
                                 Your browser does not support the video tag.
                                 </video>
                                 <form method="post" action="/borravid">
                                     <input type="hidden" id="idvideoborrar" name="idvideoborrar" value=${i[0]}>
-                                    <input type="submit" class="btn btn-primary" id="borraboton" value="" name="botonborrar" />
+                                    <input type="submit" class="btn btn-primary" id="borraboton" value="" title="Borrar video" name="botonborrar" />
                                 </form>
                             </div>
                         </div> `).join('') }
@@ -307,7 +311,7 @@ app.post('/muestrabusqueda', express.urlencoded({ extended: false }),async (req,
     let HTML_ARCH = `
             ${videosfiltrados2.map(i=>`
                 <span id='contienevideo'> <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>
-                <video width="640" height="480" controls>
+                <video width="600" height="300" controls>
                 <source src="/vids/${i[0]}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -357,7 +361,7 @@ app.get('/usuario/:nombre', async (req,res) => {
                 ${newvidreos.map(i=>`
                     <div id='contienevideo'>
                     <h3 id="titulovideo">${ i[1] } de ${ i[2] }</h3>         
-                    <video width="640" height="480" controls>
+                    <video width="600" height="300" controls>
                     <source src="/vids/${i[0]}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
