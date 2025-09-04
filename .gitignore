@@ -3,8 +3,12 @@ package-lock.json
 node_modules/
 public/vids/*
 !public/vids/.gitkeep
+!public/vids/1.mp4
+!public/vids/2.mp4
+
 public/frames/*
 !public/frames/.gitkeep
+
 video.mp4
 video3.mp4
 server_envio.js
