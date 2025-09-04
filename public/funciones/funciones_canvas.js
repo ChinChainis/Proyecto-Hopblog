@@ -281,7 +281,7 @@ document.getElementById('btn-video').addEventListener("click", function(e) {
       e.preventDefault();
       let numnote = (document.getElementById("fname").value).replace(/ /g,"_");
 
-      let tiempotot = num_frames * 2500;
+      let tiempotot = num_frames * 3000;
 
       const myPromise = new Promise((resolve) => {
 
